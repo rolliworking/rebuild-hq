@@ -1,0 +1,60 @@
+---
+description: Rolliworks rebuild-hq doctrine — skills, scope, branch policy, and verification rules
+alwaysApply: true
+---
+
+# Rebuild HQ Doctrine
+
+You are working from the `rebuild-hq` repo — a standalone repository for agent skills and doctrine. Read `CLAUDE.md` at the repo root for full orientation.
+
+## Repo map
+
+**This repo (`rebuild-hq`):** agent skills (`.claude/skills/`) and doctrine only.
+
+**Sibling repos** (separate git remotes, not tracked by rebuild-hq):
+
+| Path | App | Abbr |
+|------|-----|------|
+| `apps/rs/` | RolliSuite | RS |
+| `apps/rw/` | RolliWorking | RW |
+| `apps/rc/` | RolliConnect | RC |
+| `apps/rt/` | RolliTime | RT |
+| `apps/aa/` | Authenticator | AA |
+| `documentation/` | Domain docs + all decisions (D-001–D-014) | — |
+| *(planned)* | Jarvis | — |
+
+App repos: work on `test` branch; cherry-pick verified commits to `main`.
+
+## Skills (`.claude/skills/`)
+
+Invoke the matching skill before starting work:
+
+- `mapping-legacy-workflows` — document existing behavior
+- `modeling-canonical-data` — schema design
+- `generating-task-packets` — bounded executor briefs
+- `reviewing-prs-governance` — PR/commit review
+- `orchestrating-cutover-tests` — cutovers and promotions
+
+## Non-negotiable rules
+
+- **Surgical fix only** — touch only files listed in the task packet
+- **One commit per packet** — report SHA on completion; "done" without SHA is not shipped
+- **Cherry-pick verified commits** to `main` — do not merge whole `test` branches
+- **Reuse-first** — search the workspace for existing assets before creating new ones
+- **Ground truth** — verify DB and live behavior; never infer production state
+
+## Before coding
+
+1. Read `CLAUDE.md` and the relevant skill
+2. Read `documentation/handoff/current.md` if touching live apps
+3. Confirm task packet scope, acceptance criteria, and test commands exist
+
+## Commits and PRs
+
+- Do not commit unless explicitly asked
+- Do not push unless explicitly asked
+- Review output against `reviewing-prs-governance` before recommending merge
+
+## Response discipline (D-009)
+
+Keep responses short. Maximum 1–2 questions per turn.
