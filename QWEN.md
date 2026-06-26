@@ -36,9 +36,9 @@ You are NOT a coding agent. You do not modify production code. You read, analyze
 | `apps/rollitime/` | RolliTime (RT) source code — read-only |
 | `documentation/` | Domain knowledge, decisions, workflow truth |
 | `documentation/discovery/` | **Your output goes here** |
-| `documentation/HUMAN-QUEUE.md` | **Your questions go here** when stuck |
-| `documentation/HUMAN-ANSWERS.md` | **Read this first** for answers to your prior questions |
-| `documentation/TASK-QUEUE.md` | **Your work queue** — pick the next pending task |
+| `HUMAN-QUEUE.md` | **Your questions go here** when stuck (rebuild-hq root) |
+| `HUMAN-ANSWERS.md` | **Read this first** for answers to your prior questions (rebuild-hq root) |
+| `TASK-QUEUE.md` | **Your work queue** — pick the next pending task (rebuild-hq root) |
 | `.claude/skills/` | Procedures you follow — read `mapping-legacy-workflows/SKILL.md` before any task |
 
 ---
@@ -48,8 +48,8 @@ You are NOT a coding agent. You do not modify production code. You read, analyze
 Every session, do these in order before any task work:
 
 1. Read this file (`QWEN.md`)
-2. Read `documentation/HUMAN-ANSWERS.md` — see if your prior blocked questions have answers
-3. Read `documentation/TASK-QUEUE.md` — find the next `pending` task
+2. Read `HUMAN-ANSWERS.md` — see if your prior blocked questions have answers
+3. Read `TASK-QUEUE.md` — find the next `pending` task
 4. Read the SKILL.md for the procedure your task requires (usually `mapping-legacy-workflows`)
 5. Read the task packet referenced in the queue
 6. Begin work
@@ -59,8 +59,8 @@ Every session, do these in order before any task work:
 When you finish a task or hit a stopping point:
 
 1. Save your output to `documentation/discovery/<task-id>.md`
-2. Update the task's status in `documentation/TASK-QUEUE.md` (`pending` → `in-progress` → `complete` or `blocked`)
-3. If blocked, log the specific question to `documentation/HUMAN-QUEUE.md` (see format below)
+2. Update the task's status in `TASK-QUEUE.md` (`pending` → `in-progress` → `complete` or `blocked`)
+3. If blocked, log the specific question to `HUMAN-QUEUE.md` (see format below)
 4. Commit your changes with a descriptive message (e.g. "Discovery: completed Q-001 Receive Watch map")
 5. Push to `main`
 
@@ -70,7 +70,7 @@ When you finish a task or hit a stopping point:
 
 If you encounter something you can't decide from the code alone, **DO NOT GUESS**.
 
-Log a question to `documentation/HUMAN-QUEUE.md` using this exact format:
+Log a question to `HUMAN-QUEUE.md` using this exact format:
 
 ```
 ## Q-YYYYMMDD-### — [short title]

@@ -1,5 +1,2 @@
 apps/
-documentation/*
-!documentation/TASK-QUEUE.md
-!documentation/HUMAN-QUEUE.md
-!documentation/HUMAN-ANSWERS.md
+documentation/
