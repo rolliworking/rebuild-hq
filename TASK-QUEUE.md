@@ -2,7 +2,7 @@
 
 > **For Qwen:** Pick the next task with status `pending`. Update status to `in-progress` when you start. To `complete` or `blocked` when you finish. Never skip the workflow.
 
-**Queue status:** 15 pending, 0 in-progress, 0 complete, 0 blocked
+**Queue status:** 14 pending, 0 in-progress, 1 complete, 0 blocked
 **Last updated:** 2026-06-25
 
 ---
@@ -21,7 +21,7 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 
 | ID | Status | Priority | Title | Depends on |
 |---|---|---|---|---|
-| Q-001 | pending | P0 | Map the Receive Watch module (RS) | — |
+| Q-001 | complete | P0 | Map the Receive Watch module (RS) | — |
 | Q-002 | pending | P0 | Map the Work Queue state machine (RW) | — |
 | Q-003 | pending | P1 | Map the RolliConnect inbox + portal | — |
 | Q-004 | pending | P1 | Audit the Shop Floor module (RS) | Q-001 (component registration) |
@@ -45,7 +45,7 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 
 ### Q-001 — Map the Receive Watch module (RS)
 
-**Status:** pending
+**Status:** complete
 **Priority:** P0
 **Estimated time:** 3-4 hours
 **Skill:** `mapping-legacy-workflows`
