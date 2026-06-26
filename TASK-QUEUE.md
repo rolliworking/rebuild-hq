@@ -2,7 +2,7 @@
 
 > **For Qwen:** Pick the next task with status `pending`. Update status to `in-progress` when you start. To `complete` or `blocked` when you finish. Never skip the workflow.
 
-**Queue status:** 5 pending, 0 in-progress, 0 complete, 0 blocked
+**Queue status:** 15 pending, 0 in-progress, 0 complete, 0 blocked
 **Last updated:** 2026-06-25
 
 ---
@@ -26,6 +26,16 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 | Q-003 | pending | P1 | Map the RolliConnect inbox + portal | — |
 | Q-004 | pending | P1 | Audit the Shop Floor module (RS) | Q-001 (component registration) |
 | Q-005 | pending | P2 | Map QBO sync paths (customer / invoice / PO) | — |
+| Q-006 | pending | P1 | Map Pickup Station + QBO bypass workflow | Q-001, Q-005 |
+| Q-007 | pending | P2 | Inventory email send paths + template usage | Q-001 |
+| Q-008 | pending | P1 | Close RolliTime ↔ RS contract gaps (audit follow-up) | — |
+| Q-009 | pending | P1 | Map inspection photo storage + R2 access patterns | — |
+| Q-010 | pending | P0 | Document cross-app authentication current state | — |
+| Q-011 | pending | P0 | Audit component registration (unblocks Shop Floor) | Q-001 |
+| Q-012 | pending | P2 | Identify RolliConnect duplicate-client root cause | Q-003 |
+| Q-013 | pending | P1 | Map watch storage / safe workflow digital state | Q-001, Q-011 |
+| Q-014 | pending | P2 | Inventory RolliWorking iPad UI + gestures | Q-002 |
+| Q-015 | pending | P2 | Map intake workflow variants (estimate-first vs none) | Q-001 |
 
 ---
 
@@ -213,15 +223,378 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 
 ---
 
-## Backlog (not yet queued)
+### Q-006 — Map Pickup Station + QBO bypass workflow
 
-Future tasks that will be added once the first batch is complete:
+**Status:** pending
+**Priority:** P1
+**Estimated time:** 2-3 hours
+**Skill:** `mapping-legacy-workflows`
+**Depends on:** Q-001 (intake context), Q-005 (QBO context)
 
-- Q-006 — Map the Pickup Station flow + QBO bypass
-- Q-007 — Inventory all email send paths (RS) and template usage
-- Q-008 — RolliTime ↔ RS contract gap analysis (close Qwen audit gaps from earlier session)
-- Q-009 — Inspection photo storage (R2 bucket) — where photos live, who reads, who writes
-- Q-010 — Cross-app authentication patterns (current state) — input to D-014 prereq #3
+**Goal:** Document the full Pickup Station flow: QR scan, payment check, QBO bypass logic, intake-photo comparison, exit photo capture. Identify integration points for future IP cam / Nest snapshot capability per D-015.
+
+**Why this matters:** Mike's chain-of-custody priority (D-015) hooks directly into the Pickup Station. The QBO bypass exists because QBO has payment registration latency — need to know exactly when and how the bypass is invoked.
+
+**Files / folders in scope:**
+- `apps/rollisuite/src/pages/pickup/` (or wherever the Pickup Station UI lives)
+- `apps/rollisuite/supabase/functions/qbo-*` for the payment-check edge functions
+- Compare to `documentation/workflows/MICHAEL-WORKFLOW.md` Section 3 (pickup section)
+
+**Required output:** `documentation/discovery/Q-006-pickup-station.md` covering:
+- Step-by-step flow from QR scan → completion
+- Payment check logic (when does it call QBO vs when does the bypass kick in)
+- Photo comparison logic (intake photos vs exit photos)
+- Audit log writes
+- Integration points where IP cam / Nest snapshot could hook in without rebuilding the flow
+
+**Acceptance criteria:**
+- QBO bypass code path is named with file path and line numbers
+- The "known paid" decision logic is documented (how does it know?)
+- Photo comparison flow is mapped end-to-end
+
+**Out of scope:**
+- IP cam integration design (just identify hook points)
+- QBO sync redesign (covered in Q-005)
+
+---
+
+### Q-007 — Inventory email send paths + template usage (RS)
+
+**Status:** pending
+**Priority:** P2
+**Estimated time:** 2-3 hours
+**Skill:** `mapping-legacy-workflows`
+**Depends on:** Q-001
+
+**Goal:** Catalog every email that RolliSuite sends, which template each uses, which trigger fires it, and which domain it sends from.
+
+**Why this matters:** Vianna's email workflow has multiple pain points: noreply addresses getting replies, no CC/BCC into RC, manual update-email workflow, missing bulk send for "testing complete." Need to know what exists before redesigning the email layer.
+
+**Files / folders in scope:**
+- `apps/rollisuite/supabase/functions/send-*-email`
+- `apps/rollisuite/src/pages/admin/email-templates/` (or wherever templates are managed)
+- `message_templates` table content
+- Compare to `documentation/workflows/VIANNA-WORKFLOW.md` Section 4 (pain points related to email)
+
+**Required output:** `documentation/discovery/Q-007-email-send-paths.md` covering:
+- Every edge function that sends email, with one-line purpose each
+- Which template each pulls from
+- Sender domain per template (noreply vs main)
+- Trigger source per template (manual button, automated cron, workflow event)
+- Identification of any hardcoded email content (violating the "always pull from message_templates" rule)
+
+**Acceptance criteria:**
+- All send-*-email functions inventoried
+- Template-to-function mapping is complete
+- Any hardcoded email strings are flagged with file path + line
+- "Reply behavior" per template documented (does it accept replies? where do they go?)
+
+**Out of scope:**
+- Don't redesign email templates
+- Don't propose bulk email infrastructure (that's a build task post-discovery)
+
+---
+
+### Q-008 — Close RolliTime ↔ RS contract gaps (audit follow-up)
+
+**Status:** pending
+**Priority:** P1
+**Estimated time:** 3-4 hours
+**Skill:** `mapping-legacy-workflows`
+
+**Goal:** Build on the prior Qwen audit (2026-06-07) that identified critical gaps in the RolliTime integration spec. Now with the workflow capture complete (VIANNA-WORKFLOW.md, MICHAEL-WORKFLOW.md), produce specific payload schemas for each of the four data flows.
+
+**Why this matters:** The earlier audit was honest — the RT contract is intent-only, no payload schemas, no endpoint definitions. RT is in active development. Without these specifics, RT can't actually integrate with RS or RW even when the shared schema is ready.
+
+**Files / folders in scope:**
+- `documentation/ROLLITIME-INTEGRATION.md` (existing spec)
+- `apps/rollitime/` (current build state)
+- `apps/rolliworking/` (target for RT→RW status push)
+- `apps/rollisuite/src/pages/inspection/` (where RT photos would surface)
+- Compare to Mike's workflow re: testing-complete email and inspection flow
+
+**Required output:** `documentation/discovery/Q-008-rt-rs-contract-gaps.md` covering:
+- **RT → RS:** Exact payload schemas for test results write-back and dial-photo metadata API. Specific table/endpoint destinations. Auth model.
+- **RS → RT:** Exact caliber/reference data fields RT needs. Pull mechanism (poll, webhook, Realtime subscription).
+- **RT → RW:** Status push payload schema. Trigger event spec. Keying mechanism (ref-serial → which RW job).
+- **RT ← RW:** Whether reverse path is needed (e.g. job cancelled). If yes, propose contract.
+- For each gap: a specific recommendation, not just identification of the gap.
+
+**Acceptance criteria:**
+- Every gap from the 2026-06-07 audit either has a proposed contract or a specific escalated question
+- Photo storage destination decision proposed (RT owns its own R2 bucket vs writes to RS's)
+- Auth pattern proposed for cross-database writes
+- The "RT cancelled mid-test" scenario has a proposed handling
+
+**Out of scope:**
+- Don't implement anything
+- Don't redesign the broader RT architecture
+
+---
+
+### Q-009 — Map inspection photo storage + R2 access patterns
+
+**Status:** pending
+**Priority:** P1
+**Estimated time:** 2-3 hours
+**Skill:** `mapping-legacy-workflows`
+
+**Goal:** Document where inspection photos live, who writes them, who reads them, how they're organized today, and what changes are needed for the future shared dial-photo library (D-008 + RolliTime).
+
+**Why this matters:** Photos are cross-cutting: RS captures inspection photos via Ipevo cam + microscope cam, RW staff need read access (currently blocked), RolliTime is building its own dial-photo library, future Authenticator app consumes the library. Galleria getting unwieldy per Vianna (30-50 watches × 10-40 photos = thousands per client).
+
+**Files / folders in scope:**
+- `apps/rollisuite/supabase/functions/upload-photo`, `upload-client-photos`, `get-photo`
+- `apps/rollisuite/src/pages/inspection/` (capture and viewing)
+- R2 bucket organization (paths, naming conventions, retention)
+- `documentation/ROLLITIME-INTEGRATION.md` §6 (photo library spec)
+
+**Required output:** `documentation/discovery/Q-009-photo-storage.md` covering:
+- R2 bucket structure today (paths, naming)
+- Photo upload paths (which functions, which storage prefix)
+- Photo read paths (who can read, with what auth)
+- The galleria UI organization (chronological? per-watch? per-job?)
+- Why RW can't see photos today (auth gap or UI gap?)
+- Proposed date-based folder structure for galleria
+- Integration plan with RolliTime's separate photo library
+
+**Acceptance criteria:**
+- Current R2 path structure documented
+- Auth model for photo access documented
+- Specific changes needed to grant RW read access named
+- Galleria reorganization plan proposed (without rebuilding the UI)
+
+**Out of scope:**
+- Don't build new photo viewers
+- Don't migrate existing photos
+
+---
+
+### Q-010 — Document cross-app authentication current state
+
+**Status:** pending
+**Priority:** P0
+**Estimated time:** 3-4 hours
+**Skill:** `mapping-legacy-workflows`
+
+**Goal:** Map exactly how RS / RW / RC authenticate to each other today, including the M3KE JWT issue. Define the auth model the rebuild needs (per REBUILD-PREREQUISITES.md #3).
+
+**Why this matters:** Foundational for the shared Supabase rebuild. Every other rebuild slice depends on knowing the auth pattern. Today's apps are in separate Supabase projects with ad-hoc cross-app auth. The rebuild needs a coherent model: service roles, RLS policies, edge function auth, cross-app reads/writes.
+
+**Files / folders in scope:**
+- `apps/rollisuite/src/contexts/AuthContext.tsx`
+- `apps/rollisuite/src/integrations/supabase/client.ts`
+- `apps/rollisuite/supabase/functions/rw-*` (cross-app calls)
+- `apps/rollisuite/supabase/functions/rc-*` (cross-app calls)
+- `apps/rolliworking/` auth setup
+- `apps/rolliconnect/` auth setup
+- M3KE's auth approach (JWT-blocked issue per RS dossier)
+
+**Required output:** `documentation/discovery/Q-010-cross-app-auth.md` covering:
+- How each app authenticates a user session today
+- How cross-app edge functions authenticate (shared secret? service role? user JWT?)
+- The specific M3KE JWT issue (what's blocking it from reading RS data?)
+- A proposed auth model for the rebuild:
+  - User session pattern across apps (one login? per-app?)
+  - Edge function auth pattern
+  - AI module auth pattern (read-only role across operational schemas)
+  - External program auth (RolliTime, Authenticator) — per-program service accounts
+
+**Acceptance criteria:**
+- Current auth pattern documented per app
+- M3KE blocker root cause identified
+- Rebuild auth proposal addresses every consumer type (apps, AI modules, external programs)
+- RLS policy implications named
+
+**Out of scope:**
+- Don't implement the new auth model
+- Don't change current auth
+
+---
+
+### Q-011 — Audit component registration (unblocks Shop Floor)
+
+**Status:** pending
+**Priority:** P0
+**Estimated time:** 3-4 hours
+**Skill:** `mapping-legacy-workflows`
+**Depends on:** Q-001
+
+**Goal:** Identify exactly where component registration happens (or fails to happen) in the intake flow. This is the root cause Mike named for the Shop Floor module's persistent failure.
+
+**Why this matters:** Mike's quote: "components aren't registered so shop floor won't work." Until component registration is reliable, Shop Floor can't function, which means service-level completion can't function, which means a major rebuild theme is blocked.
+
+**Files / folders in scope:**
+- `apps/rollisuite/src/pages/intake/` (Receive Watch flow from Q-001)
+- Component-related tables (identified in Q-001 output)
+- Any logic that creates rows in component tables during intake
+- Any logic that *should* but doesn't (the 25-day component creation outage referenced in prior chats)
+
+**Required output:** `documentation/discovery/Q-011-component-registration.md` covering:
+- Every place component registration should occur (per the intended workflow)
+- Every place it actually occurs in code (per Q-001 + further inspection)
+- The specific gap (where it should happen but doesn't)
+- The 25-day component creation outage post-mortem (what happened, what was fixed, what wasn't)
+- A minimal change proposal to make component registration reliable
+
+**Acceptance criteria:**
+- Every intended registration point named with file/line evidence
+- The gap is specific (not "registration is broken" — specifically, "row never created in `client_property_components` because trigger fires before X")
+- Minimal-change proposal scoped to "fix what's broken" not "rebuild the whole thing"
+
+**Out of scope:**
+- Don't fix the bug yet (that's a build task)
+- Don't redesign component tables
+
+---
+
+### Q-012 — Identify RolliConnect duplicate-client root cause
+
+**Status:** pending
+**Priority:** P2
+**Estimated time:** 2 hours
+**Skill:** `mapping-legacy-workflows`
+**Depends on:** Q-003
+
+**Goal:** From Q-003's mapping, identify exactly why RC creates duplicate clients. Propose a specific fix.
+
+**Why this matters:** Mike named duplicate clients as a real pain — conversations fragment across duplicate records. Mike wants merge/split + labels. Need to know why duplicates happen before deciding whether to fix matching logic or just add merge/split capability.
+
+**Files / folders in scope:**
+- Customer matching logic in RC (from Q-003)
+- `shared.customers` (or RC's equivalent today) write paths
+- Inbound email parsing logic
+
+**Required output:** `documentation/discovery/Q-012-rc-duplicate-clients.md` covering:
+- The current matching algorithm (email exact match? fuzzy? based on what fields?)
+- The specific case(s) where duplicates get created
+- Whether the root cause is matching logic or write logic
+- Proposal: improve matching vs add merge/split UI vs both
+
+**Acceptance criteria:**
+- A specific test case is named ("when client emails from different address than estimate, duplicate is created because...")
+- The fix recommendation is concrete
+
+**Out of scope:**
+- Don't build merge/split UI
+- Don't deduplicate existing records
+
+---
+
+### Q-013 — Map watch storage / safe workflow digital state
+
+**Status:** pending
+**Priority:** P1
+**Estimated time:** 2-3 hours
+**Skill:** `mapping-legacy-workflows`
+**Depends on:** Q-001, Q-011
+
+**Goal:** Map what the software knows about physical watch storage (safe contents, watchmaker bins, polish room, departments) versus what only exists in human memory or on paper (3-color carbon work orders).
+
+**Why this matters:** Mike's #1 operational risk: "Not knowing what's waiting in the safe. No trail or log for chain of custody." The chain-of-custody decision (D-015) hinges on what state already exists in code. Need to know the gap before deciding what surveillance + tracking infrastructure to add.
+
+**Files / folders in scope:**
+- `client_property` and related component tables
+- Job status flow (Q-002 output) for "in safe" / "in workshop" / "in polish" states
+- Department codes (W / B / P / PM) usage
+- The handoff between Vianna's intake (Q-001) and watchmaker assignment (Q-002)
+
+**Required output:** `documentation/discovery/Q-013-storage-workflow.md` covering:
+- Every digital state the software tracks about physical location
+- Every gap (where humans know something the system doesn't — bin assignment, current watchmaker's possession, polish room queue)
+- The 3-color carbon work order data — what's captured digitally vs what only exists on paper
+- A proposal for closing each gap with minimum invasive changes
+
+**Acceptance criteria:**
+- Digital vs paper inventory is exhaustive
+- The current "safe audit" capability (or lack of) is documented
+- Proposals for chain-of-custody hooks per D-015 are concrete
+
+**Out of scope:**
+- Don't design IP cam integration (D-015 is a future build)
+- Don't propose new workflows that change physical operations
+
+---
+
+### Q-014 — Inventory RolliWorking iPad UI + gestures
+
+**Status:** pending
+**Priority:** P2
+**Estimated time:** 2 hours
+**Skill:** `mapping-legacy-workflows`
+**Depends on:** Q-002
+
+**Goal:** Catalog every screen/page in RolliWorking, what it does on iPad today, what gestures or actions are required, and where the UI fails iPad usage patterns.
+
+**Why this matters:** Foundation for the QR-driven bench workflow per D-016. The "scan ref-serial then scan process QR" pattern needs to know which screens are currently the friction points.
+
+**Files / folders in scope:**
+- `apps/rolliworking/src/pages/` and `apps/rolliworking/src/components/`
+- iPad-specific styling (Tailwind classes, media queries)
+- Touch event handlers (or lack of)
+- Voice-to-text capability (currently absent per Mike's notes)
+
+**Required output:** `documentation/discovery/Q-014-rw-ipad-ui.md` covering:
+- Page-by-page inventory of RW screens
+- Per page: typical user action, current gesture/tap count, friction notes
+- Where the UI is web-view-only vs touch-optimized
+- Where QR scanning could replace current navigation (per D-016)
+- Recommended order of QR transformations (which screens to QR-ify first)
+
+**Acceptance criteria:**
+- Every page in RW is named with primary action
+- Tap-count for common workflows is estimated (e.g. "marking a job in-testing currently takes 4 taps")
+- QR replacement candidates are ranked by frequency-of-use
+
+**Out of scope:**
+- Don't redesign screens
+- Don't build QR generators
+
+---
+
+### Q-015 — Map intake workflow variants (estimate-first vs none)
+
+**Status:** pending
+**Priority:** P2
+**Estimated time:** 2 hours
+**Skill:** `mapping-legacy-workflows`
+**Depends on:** Q-001
+
+**Goal:** Document the multiple intake patterns: (a) standard estimate-first (99% of cases), (b) shipment arrives with no prior estimate, (c) shipment arrives with multiple estimates on one label. Identify what code path exists for each, and where the gaps are.
+
+**Why this matters:** The "estimate-first" assumption is baked into the current code (per Q-001 expected findings). The edge cases (no estimate, multi-estimate) currently rely on manual workarounds. Vianna sets aside; Mike creates estimate after the fact. Need a real process.
+
+**Files / folders in scope:**
+- `apps/rollisuite/src/pages/intake/ReceivePackagesPage.tsx` (Q-001 will have mapped this)
+- Shipping label scan logic
+- Estimate creation flow (for backfill scenarios)
+
+**Required output:** `documentation/discovery/Q-015-intake-variants.md` covering:
+- Standard estimate-first flow: confirmed working
+- Multi-estimate-per-label: current workaround documented, code support gap identified
+- No-estimate-on-arrival: current workaround documented, code support gap identified
+- Proposed minimal additions to support both edge cases without rebuilding intake
+
+**Acceptance criteria:**
+- All three patterns are named with frequency estimates
+- Workarounds Vianna and Mike use are captured in code-touchable terms
+- Proposed fixes are minimal-invasive
+
+**Out of scope:**
+- Don't redesign intake
+- Don't change the estimate creation flow
+
+---
+
+## Backlog (after Q-015)
+
+Future tasks that aren't yet queued:
+
+- Q-016 — RolliCurator scaffolding spec (when ready to build)
+- Q-017 — RolliShop greenfield architecture proposal
+- Q-018 — Concierge role workflow design (when role is filled)
+- Q-019 — PartsWiki standalone scope finalization
+- Q-020 — Cross-app testing harness (e2e flows spanning RS + RW + RC)
 
 ---
 
