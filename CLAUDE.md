@@ -37,6 +37,10 @@ Sibling repos (separate git remotes — not tracked by rebuild-hq):
 | AA | Authenticator | In ecosystem — genuine vs counterfeit verification |
 | — | Jarvis | Planned — not yet built |
 
+## Language strategy (D-017)
+
+Customer-facing operational apps (**RS, RW, RC**) stay **TypeScript / React**. AI, ML, data, and computer-vision modules (**RT, M3KE, Authenticator, Jarvis, RolliCurator**) are built in **Python (FastAPI)**. All stacks connect via shared PostgreSQL (Supabase) and language-agnostic API contracts — not shared-codebase imports. See `documentation/DECISIONS-REGISTRY.md` D-017 for the full assignment table.
+
 ## Tool stack (D-005)
 
 | Tool | Role |
@@ -77,7 +81,7 @@ Skills live in `.claude/skills/<name>/SKILL.md`. Read the full skill before star
 1. This file (`CLAUDE.md`)
 2. Relevant skill in `.claude/skills/`
 3. `documentation/handoff/current.md`
-4. `documentation/DECISIONS-REGISTRY.md` (all decisions, including D-014)
+4. `documentation/DECISIONS-REGISTRY.md` (all decisions, including D-014+)
 5. Relevant CONTEXT_DOSSIER or workflow doc
 6. Only then — app source code in the relevant sibling repo
 
@@ -99,7 +103,7 @@ Skills live in `.claude/skills/<name>/SKILL.md`. Read the full skill before star
 
 ## Decisions
 
-All decision records (D-001 through D-014): `documentation/DECISIONS-REGISTRY.md`
+All decision records (D-001 through D-017): `documentation/DECISIONS-REGISTRY.md`
 
 ## Anti-patterns
 
