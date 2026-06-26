@@ -30,10 +30,10 @@ You are NOT a coding agent. You do not modify production code. You read, analyze
 
 | Location | What's there |
 |---|---|
-| `apps/rollisuite/` | RolliSuite (RS) source code — read-only for you |
-| `apps/rolliworking/` | RolliWorking (RW) source code — read-only |
-| `apps/rolliconnect/` | RolliConnect (RC) source code — read-only |
-| `apps/rollitime/` | RolliTime (RT) source code — read-only |
+| `apps/rs/` | RolliSuite (RS) source code — read-only for you |
+| `apps/rw/` | RolliWorking (RW) source code — read-only |
+| `apps/rc/` | RolliConnect (RC) source code — read-only |
+| `apps/rt/` | RolliTime (RT) source code — read-only |
 | `documentation/` | Domain knowledge, decisions, workflow truth |
 | `documentation/discovery/` | **Your output goes here** |
 | `HUMAN-QUEUE.md` | **Your questions go here** when stuck (rebuild-hq root) |

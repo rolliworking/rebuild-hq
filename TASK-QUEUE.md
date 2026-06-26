@@ -55,10 +55,10 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 **Why this first:** Receive Watch is the entry point for every watch in the shop. Earlier discovery showed the 4 fields entered at intake (ref-serial, department, components, caliber) land across 5 tables, with a broken FK to `calibers`. The Shop Floor failure is downstream of this. Fixing the intake data model is foundational.
 
 **Files / folders in scope:**
-- `apps/rollisuite/src/pages/intake/ReceivePackagesPage.tsx`
-- `apps/rollisuite/src/pages/intake/ClientWatchEntryPage.tsx`
-- `apps/rollisuite/supabase/migrations/` (for table definitions touched)
-- `apps/rollisuite/supabase/functions/` (any function called from the intake flow)
+- `apps/rs/src/pages/intake/ReceivePackagesPage.tsx`
+- `apps/rs/src/pages/intake/ClientWatchEntryPage.tsx`
+- `apps/rs/supabase/migrations/` (for table definitions touched)
+- `apps/rs/supabase/functions/` (any function called from the intake flow)
 - Compare findings to `documentation/workflows/VIANNA-WORKFLOW.md` and `documentation/workflows/MICHAEL-WORKFLOW.md`
 
 **Required output:** `documentation/discovery/Q-001-receive-watch-module.md` following the `mapping-legacy-workflows` skill structure.
@@ -73,7 +73,7 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 **Out of scope:**
 - Don't propose schema changes (that's a separate decision)
 - Don't redesign the module
-- Don't touch `rollitime` or `rolliworking` (separate tasks)
+- Don't touch `apps/rt/` or `apps/rw/` (separate tasks)
 
 **Blocker examples (escalate to HUMAN-QUEUE):**
 - "Is the `received_case = 1` hardcode intentional or a bug?"
@@ -93,10 +93,10 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 **Why this first:** Mike's workflow doc named several statuses (in-testing, waiting-parts-approval, downgrade, ready-for-inspection, ready-to-ship). Need to confirm what actually exists in code vs. what's expected. The QR-driven bench workflow (D-016) depends on knowing this state machine completely.
 
 **Files / folders in scope:**
-- `apps/rolliworking/src/` — UI and state logic
-- `apps/rolliworking/supabase/migrations/` — status enum and tables
-- `apps/rolliworking/supabase/functions/` — edge functions, especially anything `rs-*` or `rc-*`
-- `apps/rollisuite/supabase/functions/rw-*` — RS-side counterparts
+- `apps/rw/src/` — UI and state logic
+- `apps/rw/supabase/migrations/` — status enum and tables
+- `apps/rw/supabase/functions/` — edge functions, especially anything `rs-*` or `rc-*`
+- `apps/rs/supabase/functions/rw-*` — RS-side counterparts
 - Compare to `documentation/workflows/MICHAEL-WORKFLOW.md` Section 2
 
 **Required output:** `documentation/discovery/Q-002-work-queue-state-machine.md` with:
@@ -131,10 +131,10 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 **Why:** Mike flagged that RC creates duplicate clients and there's no merge/split. Also that inspection photos can't be sent from RS to RC. Need to know what exists today before designing what's needed.
 
 **Files / folders in scope:**
-- `apps/rolliconnect/src/` — inbox, portal, message threading
-- `apps/rolliconnect/supabase/migrations/` — conversation, thread, token tables
-- `apps/rolliconnect/supabase/functions/` — reply token handlers, portal magic links
-- `apps/rollisuite/supabase/functions/rc-*` — RS-side integration
+- `apps/rc/src/` — inbox, portal, message threading
+- `apps/rc/supabase/migrations/` — conversation, thread, token tables
+- `apps/rc/supabase/functions/` — reply token handlers, portal magic links
+- `apps/rs/supabase/functions/rc-*` — RS-side integration
 
 **Required output:** `documentation/discovery/Q-003-rolliconnect-inbox-portal.md` covering:
 - Inbox architecture (conversations, threads, messages, replies)
@@ -167,7 +167,7 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 **Why:** Mike named Shop Floor as a critical broken module. Service-level completion ("in safe awaiting component") is designed into Shop Floor but the failure mode is "components aren't registered so Shop Floor won't work." Need to confirm this and map the gap.
 
 **Files / folders in scope:**
-- `apps/rollisuite/src/pages/shop-floor/` (or wherever Shop Floor lives)
+- `apps/rs/src/pages/shop-floor/` (or wherever Shop Floor lives)
 - Component registration tables (identified in Q-001)
 - Any docs about Shop Floor in `documentation/` (Mike mentioned separate docs exist — search for them)
 
@@ -201,7 +201,7 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 **Why:** Per RS_CONTEXT_DOSSIER §0.1, customer sync is broken (cron started but no terminal status), invoice sync works fine. PO sync is low-volume and unconfirmed. Rebuild needs to know which paths to preserve, which to fix, which to redesign.
 
 **Files / folders in scope:**
-- `apps/rollisuite/supabase/functions/qbo-*` (all 16 functions per the dossier)
+- `apps/rs/supabase/functions/qbo-*` (all 16 functions per the dossier)
 - Cron job configurations
 - QBO token storage / refresh logic
 - Any audit logs of recent sync runs
@@ -236,8 +236,8 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 **Why this matters:** Mike's chain-of-custody priority (D-015) hooks directly into the Pickup Station. The QBO bypass exists because QBO has payment registration latency — need to know exactly when and how the bypass is invoked.
 
 **Files / folders in scope:**
-- `apps/rollisuite/src/pages/pickup/` (or wherever the Pickup Station UI lives)
-- `apps/rollisuite/supabase/functions/qbo-*` for the payment-check edge functions
+- `apps/rs/src/pages/pickup/` (or wherever the Pickup Station UI lives)
+- `apps/rs/supabase/functions/qbo-*` for the payment-check edge functions
 - Compare to `documentation/workflows/MICHAEL-WORKFLOW.md` Section 3 (pickup section)
 
 **Required output:** `documentation/discovery/Q-006-pickup-station.md` covering:
@@ -271,8 +271,8 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 **Why this matters:** Vianna's email workflow has multiple pain points: noreply addresses getting replies, no CC/BCC into RC, manual update-email workflow, missing bulk send for "testing complete." Need to know what exists before redesigning the email layer.
 
 **Files / folders in scope:**
-- `apps/rollisuite/supabase/functions/send-*-email`
-- `apps/rollisuite/src/pages/admin/email-templates/` (or wherever templates are managed)
+- `apps/rs/supabase/functions/send-*-email`
+- `apps/rs/src/pages/admin/email-templates/` (or wherever templates are managed)
 - `message_templates` table content
 - Compare to `documentation/workflows/VIANNA-WORKFLOW.md` Section 4 (pain points related to email)
 
@@ -308,9 +308,9 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 
 **Files / folders in scope:**
 - `documentation/ROLLITIME-INTEGRATION.md` (existing spec)
-- `apps/rollitime/` (current build state)
-- `apps/rolliworking/` (target for RT→RW status push)
-- `apps/rollisuite/src/pages/inspection/` (where RT photos would surface)
+- `apps/rt/` (current build state)
+- `apps/rw/` (target for RT→RW status push)
+- `apps/rs/src/pages/inspection/` (where RT photos would surface)
 - Compare to Mike's workflow re: testing-complete email and inspection flow
 
 **Required output:** `documentation/discovery/Q-008-rt-rs-contract-gaps.md` covering:
@@ -344,8 +344,8 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 **Why this matters:** Photos are cross-cutting: RS captures inspection photos via Ipevo cam + microscope cam, RW staff need read access (currently blocked), RolliTime is building its own dial-photo library, future Authenticator app consumes the library. Galleria getting unwieldy per Vianna (30-50 watches × 10-40 photos = thousands per client).
 
 **Files / folders in scope:**
-- `apps/rollisuite/supabase/functions/upload-photo`, `upload-client-photos`, `get-photo`
-- `apps/rollisuite/src/pages/inspection/` (capture and viewing)
+- `apps/rs/supabase/functions/upload-photo`, `upload-client-photos`, `get-photo`
+- `apps/rs/src/pages/inspection/` (capture and viewing)
 - R2 bucket organization (paths, naming conventions, retention)
 - `documentation/ROLLITIME-INTEGRATION.md` §6 (photo library spec)
 
@@ -382,12 +382,12 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 **Why this matters:** Foundational for the shared Supabase rebuild. Every other rebuild slice depends on knowing the auth pattern. Today's apps are in separate Supabase projects with ad-hoc cross-app auth. The rebuild needs a coherent model: service roles, RLS policies, edge function auth, cross-app reads/writes.
 
 **Files / folders in scope:**
-- `apps/rollisuite/src/contexts/AuthContext.tsx`
-- `apps/rollisuite/src/integrations/supabase/client.ts`
-- `apps/rollisuite/supabase/functions/rw-*` (cross-app calls)
-- `apps/rollisuite/supabase/functions/rc-*` (cross-app calls)
-- `apps/rolliworking/` auth setup
-- `apps/rolliconnect/` auth setup
+- `apps/rs/src/contexts/AuthContext.tsx`
+- `apps/rs/src/integrations/supabase/client.ts`
+- `apps/rs/supabase/functions/rw-*` (cross-app calls)
+- `apps/rs/supabase/functions/rc-*` (cross-app calls)
+- `apps/rw/` auth setup
+- `apps/rc/` auth setup
 - M3KE's auth approach (JWT-blocked issue per RS dossier)
 
 **Required output:** `documentation/discovery/Q-010-cross-app-auth.md` covering:
@@ -425,7 +425,7 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 **Why this matters:** Mike's quote: "components aren't registered so shop floor won't work." Until component registration is reliable, Shop Floor can't function, which means service-level completion can't function, which means a major rebuild theme is blocked.
 
 **Files / folders in scope:**
-- `apps/rollisuite/src/pages/intake/` (Receive Watch flow from Q-001)
+- `apps/rs/src/pages/intake/` (Receive Watch flow from Q-001)
 - Component-related tables (identified in Q-001 output)
 - Any logic that creates rows in component tables during intake
 - Any logic that *should* but doesn't (the 25-day component creation outage referenced in prior chats)
@@ -529,7 +529,7 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 **Why this matters:** Foundation for the QR-driven bench workflow per D-016. The "scan ref-serial then scan process QR" pattern needs to know which screens are currently the friction points.
 
 **Files / folders in scope:**
-- `apps/rolliworking/src/pages/` and `apps/rolliworking/src/components/`
+- `apps/rw/src/pages/` and `apps/rw/src/components/`
 - iPad-specific styling (Tailwind classes, media queries)
 - Touch event handlers (or lack of)
 - Voice-to-text capability (currently absent per Mike's notes)
@@ -565,7 +565,7 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 **Why this matters:** The "estimate-first" assumption is baked into the current code (per Q-001 expected findings). The edge cases (no estimate, multi-estimate) currently rely on manual workarounds. Vianna sets aside; Mike creates estimate after the fact. Need a real process.
 
 **Files / folders in scope:**
-- `apps/rollisuite/src/pages/intake/ReceivePackagesPage.tsx` (Q-001 will have mapped this)
+- `apps/rs/src/pages/intake/ReceivePackagesPage.tsx` (Q-001 will have mapped this)
 - Shipping label scan logic
 - Estimate creation flow (for backfill scenarios)
 
