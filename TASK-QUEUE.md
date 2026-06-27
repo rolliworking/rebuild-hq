@@ -2,8 +2,8 @@
 
 > **For Qwen:** Pick the next task with status `pending`. Update status to `in-progress` when you start. To `complete` or `blocked` when you finish. Never skip the workflow.
 
-**Queue status:** 14 pending, 0 in-progress, 1 complete, 0 blocked
-**Last updated:** 2026-06-25
+**Queue status:** 11 pending, 0 in-progress, 4 complete, 0 blocked
+**Last updated:** 2026-06-26
 
 ---
 
@@ -22,15 +22,15 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 | ID | Status | Priority | Title | Depends on |
 |---|---|---|---|---|
 | Q-001 | complete | P0 | Map the Receive Watch module (RS) | — |
-| Q-002 | pending | P0 | Map the Work Queue state machine (RW) | — |
-| Q-003 | pending | P1 | Map the RolliConnect inbox + portal | — |
+| Q-002 | complete | P0 | Map the Work Queue state machine (RW) | — |
+| Q-003 | complete | P1 | Map the RolliConnect inbox + portal | Q-001 |
 | Q-004 | pending | P1 | Audit the Shop Floor module (RS) | Q-001 (component registration) |
 | Q-005 | pending | P2 | Map QBO sync paths (customer / invoice / PO) | — |
 | Q-006 | pending | P1 | Map Pickup Station + QBO bypass workflow | Q-001, Q-005 |
 | Q-007 | pending | P2 | Inventory email send paths + template usage | Q-001 |
 | Q-008 | pending | P1 | Close RolliTime ↔ RS contract gaps (audit follow-up) | — |
 | Q-009 | pending | P1 | Map inspection photo storage + R2 access patterns | — |
-| Q-010 | pending | P0 | Document cross-app authentication current state | — |
+| Q-010 | complete | P0 | Document cross-app authentication current state | — |
 | Q-011 | pending | P0 | Audit component registration (unblocks Shop Floor) | Q-001 |
 | Q-012 | pending | P2 | Identify RolliConnect duplicate-client root cause | Q-003 |
 | Q-013 | pending | P1 | Map watch storage / safe workflow digital state | Q-001, Q-011 |
@@ -83,14 +83,16 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 
 ### Q-002 — Map the Work Queue state machine (RW)
 
-**Status:** pending
+**Status:** complete
 **Priority:** P0
 **Estimated time:** 3-4 hours
 **Skill:** `mapping-legacy-workflows`
 
 **Goal:** Produce a complete state machine for RolliWorking jobs: every status, every transition, who/what can trigger each transition, what side effects fire on transition (emails, status pushes back to RS, audit log writes).
 
-**Why this first:** Mike's workflow doc named several statuses (in-testing, waiting-parts-approval, downgrade, ready-for-inspection, ready-to-ship). Need to confirm what actually exists in code vs. what's expected. The QR-driven bench workflow (D-016) depends on knowing this state machine completely.
+**Why this first:** Mike's workflow doc named several statuses (in-testing, waiting-parts-approval, downgrade, ready-for-inspection, ready-to-ship). The output document confirms what actually exists in code vs. what's expected. **Gaps identified:** heavy lossy status mapping (9 RW statuses → 2 RS statuses), no auto-transition from `waiting_approval`, no auto-recovery from `waiting_components`, no audit log for in-app RW status changes via `set_job_status`, and the `rollisuite-webhook` inbound mapping uses a completely separate status vocabulary.
+
+**Output:** `documentation/discovery/Q-002-work-queue-state-machine.md` — complete state machine map with all 11 statuses, all transitions, side effects, and 7 identified gaps.
 
 **Files / folders in scope:**
 - `apps/rw/src/` — UI and state logic
@@ -121,7 +123,7 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 
 ### Q-003 — Map the RolliConnect inbox + portal
 
-**Status:** pending
+**Status:** complete
 **Priority:** P1
 **Estimated time:** 2-3 hours
 **Skill:** `mapping-legacy-workflows`
@@ -129,6 +131,8 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 **Goal:** Document the RolliConnect message inbox, customer portal, reply token system, and the duplicate-client problem.
 
 **Why:** Mike flagged that RC creates duplicate clients and there's no merge/split. Also that inspection photos can't be sent from RS to RC. Need to know what exists today before designing what's needed.
+
+**Output:** `documentation/discovery/Q-003-rolliconnect-inbox-portal.md` — maps all 16 RC tables, inbox query logic, 5 conversation tabs, 5 conversation states, HMAC reply token strategy (O(2000) verification), portal token injection pattern, inbound email handler (signature stripping, attachment handling), RC → RS timeline status flow, nudge system, and the duplicate client root cause (no case-insensitive email dedup, no merge/split UI).
 
 **Files / folders in scope:**
 - `apps/rc/src/` — inbox, portal, message threading
@@ -372,14 +376,14 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 
 ### Q-010 — Document cross-app authentication current state
 
-**Status:** pending
+**Status:** complete
 **Priority:** P0
 **Estimated time:** 3-4 hours
 **Skill:** `mapping-legacy-workflows`
 
 **Goal:** Map exactly how RS / RW / RC authenticate to each other today, including the M3KE JWT issue. Define the auth model the rebuild needs (per REBUILD-PREREQUISITES.md #3).
 
-**Why this matters:** Foundational for the shared Supabase rebuild. Every other rebuild slice depends on knowing the auth pattern. Today's apps are in separate Supabase projects with ad-hoc cross-app auth. The rebuild needs a coherent model: service roles, RLS policies, edge function auth, cross-app reads/writes.
+**Why this matters:** Foundational for the shared Supabase rebuild. Output documents: 3-app auth mapping, M3KE JWT root cause (per-module service role needed), per-consumer auth model (human users, service roles, AI modules), audit trail gaps, and rebuild recommendations. Today's apps are in separate Supabase projects with ad-hoc cross-app auth. The rebuild needs a coherent model: service roles, RLS policies, edge function auth, cross-app reads/writes.
 
 **Files / folders in scope:**
 - `apps/rs/src/contexts/AuthContext.tsx`
