@@ -299,7 +299,7 @@ Each artifact takes 5-30 minutes to produce. The whole chain per slice is ~2 hou
 
 ## Question snapshot cadence
 
-Question snapshots are the human-facing surface of the autonomous workflow. Qwen logs questions to `HUMAN-QUEUE.md` at the rebuild-hq root during its work. Periodically these get exported to dated Word documents under `documentation/queue-exports/` for offline review.
+Question snapshots are the human-facing surface of the autonomous workflow. Qwen logs questions to `HUMAN-QUEUE.md` at the rebuild-hq root during its work. Periodically these get exported to dated Word documents in Dropbox for offline, cross-device review.
 
 ### When snapshots get generated
 
@@ -310,14 +310,27 @@ A new Word doc gets created when any of these fire:
 - **Planning trigger** — before any Opus planning session, so the operator arrives with answers ready
 - **Pre-run trigger** — before any Qwen autonomous run lasting 4+ hours, so Qwen has fresh answers to work from
 
+### Where they get saved
+
+Word doc snapshots live in Dropbox, not the git repo:
+
+```
+G:\Dropbox\__AI\emergent-hq-human-queue\
+```
+
+Filename pattern: `QUESTIONS-YYYY-MM-DD.docx`
+
+This allows cross-device review and answering without git pull/push overhead. The markdown source of truth (HUMAN-QUEUE.md, HUMAN-ANSWERS.md) remains in the rebuild-hq git repo — Dropbox is for the Word snapshots only.
+
+See D-018 (amended) and `documentation/queue-exports/README.md` for the full workflow.
+
 ### Who generates them
 
 Opus or Cursor produces the Word doc by:
 1. Reading HUMAN-QUEUE.md (the live source)
 2. Reading every "Open questions" section in `documentation/discovery/`
 3. Consolidating into a Word doc with the structure shown in `documentation/queue-exports/README.md`
-4. Saving as `documentation/queue-exports/QUESTIONS-YYYY-MM-DD.docx`
-5. Committing and pushing
+4. Saving as `G:\Dropbox\__AI\emergent-hq-human-queue\QUESTIONS-YYYY-MM-DD.docx` (not committed to git)
 
 ### Where they fit in the build chain
 
@@ -325,17 +338,17 @@ This sits **orthogonal to the 6 build stages** (SPEC → PACKET → BUILD-LOG �
 
 ### How answers return
 
-1. Operator answers questions in the Word doc on phone, tablet, or anywhere offline
-2. Sends the answered Word doc back (email, file share, or just drop in the folder)
-3. Cursor reads the answered doc and updates `HUMAN-ANSWERS.md` accordingly
-4. Cursor commits and pushes
+1. Operator answers questions in the Word doc on phone, tablet, or anywhere (Dropbox auto-syncs)
+2. Saves the answered Word doc in the same Dropbox folder
+3. Cursor reads the answered doc from Dropbox and updates `HUMAN-ANSWERS.md` accordingly
+4. Cursor commits and pushes (markdown only)
 5. Qwen reads `HUMAN-ANSWERS.md` at session start and applies the answers to blocked work
 
 This closes the loop without requiring the operator to ever open the raw markdown HUMAN-QUEUE.md.
 
 ### See also
 
-- `D-018` in `DECISIONS-REGISTRY.md` — the discipline as a decision record
+- `D-018` (amended) in `DECISIONS-REGISTRY.md` — the discipline as a decision record
 - `documentation/queue-exports/README.md` — workflow and Cursor prompts
 
 ---
