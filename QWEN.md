@@ -70,24 +70,36 @@ When you finish a task or hit a stopping point:
 
 If you encounter something you can't decide from the code alone, **DO NOT GUESS**.
 
-Log a question to `HUMAN-QUEUE.md` using this exact format:
+Log a question to `HUMAN-QUEUE.md` (at the rebuild-hq root) using this exact format. The format matters — these questions are exported to Word documents periodically for offline review, and consistent structure makes that export clean.
 
 ```
 ## Q-YYYYMMDD-### — [short title]
-**Task:** [task ID this came from]
-**Type:** [business truth / scope / acceptance / priority / tradeoff]
+**Logged:** YYYY-MM-DD by Qwen
+**Task:** [task ID this came from, e.g. Q-001]
+**Type:** [business truth | scope | acceptance | priority | tradeoff]
 **Question:** [the specific question, one sentence]
 **Why it matters:** [1-2 sentences on what's blocked or affected]
-**What I observed:** [the specific code/data/contradiction that raised the question]
+**What I observed:** [the specific code, data, or contradiction that raised the question — include file path and line numbers]
 **My best guess:** [your best guess, marked as a guess]
 **Default if no answer in 7 days:** [what you'll do if no one answers]
+**Status:** open
 ```
 
-Then either:
+**Format requirements:**
+- Every field above is required. Empty fields make the Word export look broken.
+- "Type" must be one of: business truth, scope, acceptance, priority, tradeoff (matches the categories in BUILD-PROCESS.md)
+- "What I observed" should be specific — name the file and line numbers where the ambiguity exists, so a human reviewer can find the same code
+- "My best guess" is mandatory, even if low-confidence. It gives the human a starting point and makes "I disagree" answers fast
+
+After logging, either:
 - **Move on to the next task** if this question only blocks the current item
-- **Mark the task as `blocked`** in the queue and pick a different task if the question is foundational
+- **Mark the task as `blocked` in TASK-QUEUE.md and pick a different task** if the question is foundational
 
 Never wait. Never stop working. Never silently guess.
+
+### Where questions are also acceptable
+
+In addition to HUMAN-QUEUE.md, each discovery output (`documentation/discovery/Q-###-*.md`) should have its own "Open questions" section listing the questions raised during that task. This serves as context for the human reviewer reading the output file. The same questions should also appear in HUMAN-QUEUE.md — duplication is fine. The Word doc export tool pulls from both sources.
 
 ---
 
