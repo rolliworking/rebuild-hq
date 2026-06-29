@@ -2,7 +2,7 @@
 
 > **For Qwen:** Pick the next task with status `pending`. Update status to `in-progress` when you start. To `complete` or `blocked` when you finish. Never skip the workflow.
 
-**Queue status:** 8 pending, 0 in-progress, 7 complete, 0 blocked
+**Queue status:** 7 pending, 0 in-progress, 8 complete, 0 blocked
 **Last updated:** 2026-06-28
 
 ---
@@ -31,7 +31,7 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 | Q-008 | pending | P1 | Close RolliTime ↔ RS contract gaps (audit follow-up) | — |
 | Q-009 | pending | P1 | Map inspection photo storage + R2 access patterns | — |
 | Q-010 | complete | P0 | Document cross-app authentication current state | — |
-| Q-011 | pending | P0 | Audit component registration (unblocks Shop Floor) | Q-001 |
+| Q-011 | complete | P0 | Audit component registration (unblocks Shop Floor) | Q-001 |
 | Q-012 | pending | P2 | Identify RolliConnect duplicate-client root cause | Q-003 |
 | Q-013 | pending | P1 | Map watch storage / safe workflow digital state | Q-001, Q-011 |
 | Q-014 | pending | P2 | Inventory RolliWorking iPad UI + gestures | Q-002 |
@@ -420,7 +420,7 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 
 ### Q-011 — Audit component registration (unblocks Shop Floor)
 
-**Status:** pending
+**Status:** complete
 **Priority:** P0
 **Estimated time:** 3-4 hours
 **Skill:** `mapping-legacy-workflows`
