@@ -2,7 +2,7 @@
 
 > **For Qwen:** Pick the next task with status `pending`. Update status to `in-progress` when you start. To `complete` or `blocked` when you finish. Never skip the workflow.
 
-**Queue status:** 9 pending, 0 in-progress, 6 complete, 0 blocked
+**Queue status:** 8 pending, 0 in-progress, 7 complete, 0 blocked
 **Last updated:** 2026-06-28
 
 ---
@@ -26,7 +26,7 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 | Q-003 | complete | P1 | Map the RolliConnect inbox + portal | Q-001 |
 | Q-004 | complete | P1 | Audit the Shop Floor module (RS) | Q-001 (component registration) |
 | Q-005 | complete | P2 | Map QBO sync paths (customer / invoice / PO) | — |
-| Q-006 | pending | P1 | Map Pickup Station + QBO bypass workflow | Q-001, Q-005 |
+| Q-006 | complete | P1 | Map Pickup Station + QBO bypass workflow | Q-001, Q-005 |
 | Q-007 | pending | P2 | Inventory email send paths + template usage | Q-001 |
 | Q-008 | pending | P1 | Close RolliTime ↔ RS contract gaps (audit follow-up) | — |
 | Q-009 | pending | P1 | Map inspection photo storage + R2 access patterns | — |
@@ -231,7 +231,7 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 
 ### Q-006 — Map Pickup Station + QBO bypass workflow
 
-**Status:** pending
+**Status:** complete
 **Priority:** P1
 **Estimated time:** 2-3 hours
 **Skill:** `mapping-legacy-workflows`
