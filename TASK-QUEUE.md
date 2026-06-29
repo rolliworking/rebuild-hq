@@ -2,8 +2,8 @@
 
 > **For Qwen:** Pick the next task with status `pending`. Update status to `in-progress` when you start. To `complete` or `blocked` when you finish. Never skip the workflow.
 
-**Queue status:** 11 pending, 0 in-progress, 4 complete, 0 blocked
-**Last updated:** 2026-06-26
+**Queue status:** 9 pending, 0 in-progress, 6 complete, 0 blocked
+**Last updated:** 2026-06-28
 
 ---
 
@@ -24,8 +24,8 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 | Q-001 | complete | P0 | Map the Receive Watch module (RS) | — |
 | Q-002 | complete | P0 | Map the Work Queue state machine (RW) | — |
 | Q-003 | complete | P1 | Map the RolliConnect inbox + portal | Q-001 |
-| Q-004 | pending | P1 | Audit the Shop Floor module (RS) | Q-001 (component registration) |
-| Q-005 | pending | P2 | Map QBO sync paths (customer / invoice / PO) | — |
+| Q-004 | complete | P1 | Audit the Shop Floor module (RS) | Q-001 (component registration) |
+| Q-005 | complete | P2 | Map QBO sync paths (customer / invoice / PO) | — |
 | Q-006 | pending | P1 | Map Pickup Station + QBO bypass workflow | Q-001, Q-005 |
 | Q-007 | pending | P2 | Inventory email send paths + template usage | Q-001 |
 | Q-008 | pending | P1 | Close RolliTime ↔ RS contract gaps (audit follow-up) | — |
@@ -160,7 +160,7 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 
 ### Q-004 — Audit the Shop Floor module (RS)
 
-**Status:** pending
+**Status:** complete
 **Priority:** P1
 **Estimated time:** 3-4 hours
 **Skill:** `mapping-legacy-workflows`
@@ -191,11 +191,13 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 - Don't rebuild Shop Floor
 - Don't propose new statuses (that's part of Q-002)
 
+**Output:** `documentation/discovery/Q-004-shop-floor-audit.md` — documents 27-station SVG process map, 3-view architecture (bulk assign, lookup, map), 5 root causes of Shop Floor failure (BAND_ONLY_FLOW misclassification, station_id gap, intake field loss, text-based components, dual writers), 4 compensation mechanisms, status of prior fixes, and a minimal-fix proposal (small to medium scope). Confirms component registration gap from Q-001 and extends it with the specific flow classification bug.
+
 ---
 
 ### Q-005 — Map QBO sync paths (customer / invoice / PO)
 
-**Status:** pending
+**Status:** complete
 **Priority:** P2
 **Estimated time:** 2-3 hours
 **Skill:** `mapping-legacy-workflows`
