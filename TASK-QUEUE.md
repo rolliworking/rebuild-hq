@@ -2,8 +2,8 @@
 
 > **For Qwen:** Pick the next task with status `pending`. Update status to `in-progress` when you start. To `complete` or `blocked` when you finish. Never skip the workflow.
 
-**Queue status:** 7 pending, 0 in-progress, 8 complete, 0 blocked
-**Last updated:** 2026-06-28
+**Queue status:** 4 pending, 0 in-progress, 11 complete, 0 blocked
+**Last updated:** 2026-06-29
 
 ---
 
@@ -28,12 +28,12 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 | Q-005 | complete | P2 | Map QBO sync paths (customer / invoice / PO) | — |
 | Q-006 | complete | P1 | Map Pickup Station + QBO bypass workflow | Q-001, Q-005 |
 | Q-007 | pending | P2 | Inventory email send paths + template usage | Q-001 |
-| Q-008 | pending | P1 | Close RolliTime ↔ RS contract gaps (audit follow-up) | — |
-| Q-009 | pending | P1 | Map inspection photo storage + R2 access patterns | — |
+| Q-008 | complete | P1 | Close RolliTime ↔ RS contract gaps (audit follow-up) | — |
+| Q-009 | complete | P1 | Map inspection photo storage + R2 access patterns | — |
 | Q-010 | complete | P0 | Document cross-app authentication current state | — |
 | Q-011 | complete | P0 | Audit component registration (unblocks Shop Floor) | Q-001 |
 | Q-012 | pending | P2 | Identify RolliConnect duplicate-client root cause | Q-003 |
-| Q-013 | pending | P1 | Map watch storage / safe workflow digital state | Q-001, Q-011 |
+| Q-013 | complete | P1 | Map watch storage / safe workflow digital state | Q-001, Q-011 |
 | Q-014 | pending | P2 | Inventory RolliWorking iPad UI + gestures | Q-002 |
 | Q-015 | pending | P2 | Map intake workflow variants (estimate-first vs none) | Q-001 |
 
@@ -303,7 +303,7 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 
 ### Q-008 — Close RolliTime ↔ RS contract gaps (audit follow-up)
 
-**Status:** pending
+**Status:** complete
 **Priority:** P1
 **Estimated time:** 3-4 hours
 **Skill:** `mapping-legacy-workflows`
@@ -340,7 +340,7 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 
 ### Q-009 — Map inspection photo storage + R2 access patterns
 
-**Status:** pending
+**Status:** complete
 **Priority:** P1
 **Estimated time:** 2-3 hours
 **Skill:** `mapping-legacy-workflows`
@@ -489,7 +489,7 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 
 ### Q-013 — Map watch storage / safe workflow digital state
 
-**Status:** pending
+**Status:** complete
 **Priority:** P1
 **Estimated time:** 2-3 hours
 **Skill:** `mapping-legacy-workflows`
