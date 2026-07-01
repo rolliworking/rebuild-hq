@@ -100,8 +100,9 @@ Discovery output files (`documentation/discovery/Q-###-*.md`) must also use plai
 2. Relevant skill in `.claude/skills/`
 3. `documentation/handoff/current.md`
 4. `documentation/DECISIONS-REGISTRY.md` (all decisions, including D-014+)
-5. Relevant CONTEXT_DOSSIER or workflow doc
-6. Only then — app source code in the relevant sibling repo
+5. `documentation/TRANSFERABILITY-TEST.md` when drafting or reviewing a SPEC (D-023 design gate)
+6. Relevant CONTEXT_DOSSIER or workflow doc
+7. Only then — app source code in the relevant sibling repo
 
 ## Branch conventions (app repos)
 
@@ -121,7 +122,8 @@ Discovery output files (`documentation/discovery/Q-###-*.md`) must also use plai
 
 ## Decisions
 
-All decision records (D-001 through D-017): `documentation/DECISIONS-REGISTRY.md`
+All decision records: `documentation/DECISIONS-REGISTRY.md` (through D-023)
+SPEC design gate (exit thesis): `documentation/TRANSFERABILITY-TEST.md` (D-023)
 
 ## Anti-patterns
 

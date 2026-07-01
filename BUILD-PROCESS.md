@@ -41,6 +41,9 @@ If a slice skips any of these, the rebuild loses memory. Six months later you'll
 - Schema (if any) follows D-010, D-011, D-013
 - Cross-app contracts are defined
 - Open questions are resolved or logged to `HUMAN-QUEUE.md`
+- **Transferability Test** completed per D-023 — all five results Pass, or documented waiver in `documentation/TRANSFERABILITY-WAIVERS.md` (see `documentation/TRANSFERABILITY-TEST.md`)
+
+**Transferability gate (D-023):** At the end of `01-SPEC.md`, include the Transferability Test Results table. A SPEC does not lock until every test is Pass or waived. During BUILD, re-verify the implementation matches what the SPEC promised. Waivers expire within 12 months and are reviewed quarterly.
 
 ---
 
@@ -389,6 +392,8 @@ documentation/
 ├── workflows/
 │   ├── VIANNA-WORKFLOW.md
 │   └── MICHAEL-WORKFLOW.md
+├── TRANSFERABILITY-TEST.md
+├── TRANSFERABILITY-WAIVERS.md
 └── DECISIONS-REGISTRY.md (etc.)
 ```
 
