@@ -76,6 +76,24 @@ Skills live in `.claude/skills/<name>/SKILL.md`. Read the full skill before star
 7. **False summits cost trust** — don't claim "found it" until every gap in the pipeline is accounted for.
 8. **Max 1–2 questions per turn** (D-009) — don't create decision backlog.
 
+## Ambiguity handling — plain-language questions
+
+When you cannot decide from code alone, **do not guess**. Log the question to `HUMAN-QUEUE.md` and continue with the next task.
+
+**Plain-language discipline applies to Cursor Agent, Opus, and every coding agent** during discovery, SPEC, and BUILD work:
+
+- Use business terms (customer, staff, watch, invoice) — not engineer terms (row, upsert, JWT, CHECK constraint)
+- Do not use variable names, function names, or table names in the question text itself
+- Do not front-load file paths — explain what happens operationally first; put paths in parentheses at the end if needed
+- Define acronyms on first use
+- Frame questions around operational impact: "Should X happen when Y?"
+
+See **QWEN.md "Plain-language rules"** section for the full guidance, format template, and bad→good examples. Apply the same discipline whether you're Cursor Agent, Opus, or any other coding agent.
+
+Discovery output files (`documentation/discovery/Q-###-*.md`) must also use plain language in their "Open questions" sections. Questions in engineer-language must be rewritten before the next Word snapshot export (D-018).
+
+---
+
 ## Where to look first
 
 1. This file (`CLAUDE.md`)

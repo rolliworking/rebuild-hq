@@ -70,36 +70,70 @@ When you finish a task or hit a stopping point:
 
 If you encounter something you can't decide from the code alone, **DO NOT GUESS**.
 
-Log a question to `HUMAN-QUEUE.md` (at the rebuild-hq root) using this exact format. The format matters — these questions are exported to Word documents periodically for offline review, and consistent structure makes that export clean.
+Log a question to `HUMAN-QUEUE.md` (at the rebuild-hq root) using this exact format. The format matters — these questions are exported to Word documents periodically for offline review by a non-developer operator, and consistent structure makes that export clean.
+
+**Critical: use plain language throughout. The person answering these questions is not a developer.** Every field must be understandable by someone who has never written code. See "Plain-language rules" below.
 
 ```
-## Q-YYYYMMDD-### — [short title]
-**Logged:** YYYY-MM-DD by Qwen
+## Q-YYYYMMDD-### — [short title in plain English]
+**Logged:** YYYY-MM-DD by [Agent name]
 **Task:** [task ID this came from, e.g. Q-001]
 **Type:** [business truth | scope | acceptance | priority | tradeoff]
-**Question:** [the specific question, one sentence]
-**Why it matters:** [1-2 sentences on what's blocked or affected]
-**What I observed:** [the specific code, data, or contradiction that raised the question — include file path and line numbers]
-**My best guess:** [your best guess, marked as a guess]
-**Default if no answer in 7 days:** [what you'll do if no one answers]
+**Question:** [the specific question, one sentence, in plain English — no code, no jargon]
+**Why it matters:** [1-2 sentences on what's blocked or affected, in operational terms — not technical ones]
+**What I observed:** [in plain language, describe what the code does or doesn't do. If a file path or line number is essential, put it in parentheses at the end, not front-loaded.]
+**My best guess:** [your best guess in plain language, marked as a guess]
+**Default if no answer in 7 days:** [what you'll do if no one answers, in plain terms]
 **Status:** open
 ```
 
-**Format requirements:**
-- Every field above is required. Empty fields make the Word export look broken.
-- "Type" must be one of: business truth, scope, acceptance, priority, tradeoff (matches the categories in BUILD-PROCESS.md)
-- "What I observed" should be specific — name the file and line numbers where the ambiguity exists, so a human reviewer can find the same code
-- "My best guess" is mandatory, even if low-confidence. It gives the human a starting point and makes "I disagree" answers fast
+### Plain-language rules
 
-After logging, either:
+**Do:**
+- Write like you're explaining to someone who runs a business but doesn't code
+- Use business terms (customer, invoice, staff member, watch, part) not technical terms (row, tuple, JSONB, upsert)
+- Explain WHAT something does before mentioning WHERE it lives in code
+- If a technical term is unavoidable, define it in parentheses the first time (e.g., "webhook — an automatic message from one system to another")
+- Frame questions around operational impact: "Should X happen when Y?" is clearer than "Should we implement Z pattern?"
+
+**Don't:**
+- Use variable names or function names in questions (`handleSaveEntry`, `payloadReceivedComponents`)
+- Assume the reader knows what "the JWT" or "the CHECK constraint" is
+- Front-load file paths ("In apps/rs/src/pages/intake/ClientWatchEntryPage.tsx line 1217...")
+- Use acronyms without expanding them the first time (JWT, RLS, HMAC, PK, FK)
+- Chain multiple technical concepts in one sentence
+
+### Examples of plain-language rewrites
+
+**Bad:** "Should RT→RS test results write to legacy timing_tests or new shared.timing_test_results?"
+
+**Good:** "When RolliTime finishes testing a watch, should the result be saved to the existing timing test table, or to a new one built as part of the rebuild? The existing one has old data and legacy quirks. The new one is cleaner but nothing reads from it yet."
+
+---
+
+**Bad:** "Realtime vs poll for RS→RT reference sync? RS is authoritative for caliber/reference; RT needs fresh data at barcode scan without stale tolerances."
+
+**Good:** "How should RolliTime get the latest caliber data from RolliSuite? Three options: (1) RolliSuite pushes updates to RolliTime the instant they change, (2) RolliTime asks RolliSuite for updates every 15 minutes, or (3) RolliTime asks RolliSuite fresh every time someone scans a watch. Caliber data drives what's considered 'in tolerance' during testing, so stale data means wrong tolerances."
+
+---
+
+**Bad:** "qbo_sync_log CHECK constraint rejects sync_type='invoice' but qbo-invoice-sync L443 inserts it; UPDATE matches 0 rows silently."
+
+**Good:** "The QuickBooks sync log table has a rule that says only 'customer' and 'estimate' are valid types. But the invoice sync code tries to save 'invoice' as the type. The database rejects the save, but the code doesn't notice — it moves on and returns success. Result: no record exists that any invoice sync ever happened."
+
+### Where questions are also acceptable
+
+In addition to HUMAN-QUEUE.md, each discovery output (`documentation/discovery/Q-###-*.md`) should have its own "Open questions" section listing the questions raised during that task. This serves as context for the human reviewer reading the output file. The same questions should also appear in HUMAN-QUEUE.md — duplication is fine. Both surfaces must follow the plain-language rules.
+
+The Word doc export tool pulls from both sources. If any question in either place uses technical shorthand, it must be rewritten in plain language before the next snapshot generation.
+
+### After logging
+
+Either:
 - **Move on to the next task** if this question only blocks the current item
 - **Mark the task as `blocked` in TASK-QUEUE.md and pick a different task** if the question is foundational
 
 Never wait. Never stop working. Never silently guess.
-
-### Where questions are also acceptable
-
-In addition to HUMAN-QUEUE.md, each discovery output (`documentation/discovery/Q-###-*.md`) should have its own "Open questions" section listing the questions raised during that task. This serves as context for the human reviewer reading the output file. The same questions should also appear in HUMAN-QUEUE.md — duplication is fine. The Word doc export tool pulls from both sources.
 
 ---
 
