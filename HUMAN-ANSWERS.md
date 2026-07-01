@@ -135,6 +135,128 @@ Background context: Intuit changed payload requirements in April 2026 to support
 **Action for agent:** Document as intentional operational policy. The rebuild's RBAC model should preserve this asymmetry: pickup bypass available to authenticated counter staff, shipping bypass restricted to managers.
 **Status:** active
 
+## A-20260629-001 — answers Q-005-C
+**Answered:** 2026-06-29 by Michael (via pg_cron query)
+**Question:** What is the actual cron schedule in Supabase dashboard?
+**Decision:** Six active pg_cron jobs (UTC), sourced from direct pg_cron.job query:
+1. `qbo-daily-sync` — daily 06:00 → `qbo-cron-sync` (customer sync)
+2. `maintenance-hourly` — every hour on the hour → `maintenance-cron`
+3. `qbo-invoice-sync-hourly` — every hour at :15 → `qbo-invoice-sync`
+4. `rw-status-daily-5am` — daily 10:00 UTC (~05:00 CDT / 06:00 EDT) → `rw-status-cron`
+5. `vault-storage-fee-daily` — daily 08:00 → `vault-storage-cron`
+6. `daily-gold-price-update` — daily 12:00 → `gold-price-update`
+
+Reframes prior assumptions:
+- Q-005 initial guess said "single daily cron; invoice sync manual-triggered" — WRONG
+- Invoice sync runs 24×/day via cron, but silently drops every log entry due to CHECK constraint bug (PROD-FIX-001)
+- Two additional crons need D-020 audit trail: `maintenance-hourly` (unknown scope, 24×/day) and `vault-storage-fee-daily` (direct revenue impact if silent-fails)
+
+**Action for agent:** Store the cron inventory in Q-005 discovery file. Amend PROD-FIX-001 rationale to reflect 24×/day invoice sync context. Add W-42 for D-020 audit of `maintenance-hourly` and `vault-storage-fee-daily` crons.
+**Status:** active
+
+## A-20260629-002 — answers Q-005-D
+**Answered:** 2026-06-29 by Michael
+**Question:** How many received POs have qbo_bill_id or JE notes populated?
+**Decision:** Volume is 2–10 purchase orders per week. Push is manual after receiving items. Very low volume, not worth investment in cron-driven sync.
+**Action for agent:** Confirm PO path stays as manual accounting bridge in the rebuild. No cron. Preserve the manual JE + Bill flow, but ensure both steps log to a durable audit surface per D-020 (Bill step failure after JE succeeds is a real risk — see Q-005 findings).
+**Status:** active
+
+## A-20260629-003 — answers Q-008-A
+**Answered:** 2026-06-29 by Michael
+**Question:** Should RT→RS test results write to legacy `timing_tests` or new `shared.timing_test_results`?
+**Decision:** New shared table that all apps can read. Legacy RS `timing_tests` and `pressure_tests` stay read-only for historical jobs. The strategic use case: RT test data + inspection photos + service history feed into AI-generated warranty summary reports for clients. When a warranty issue arises or a client questions the quality of work, an AI report is generated pulling test data, photos, and job history to explain and document the work performed.
+**Action for agent:** New shared schema table (e.g., `shared.timing_test_results` or `rt.timing_test_results` — see D-022-related work on canonical model). Legacy tables remain queryable for historical jobs. Create W-40 (AI warranty summary reports) as a downstream strategic feature.
+**Status:** active
+
+## A-20260629-004 — answers Q-008-B
+**Answered:** 2026-06-29 by Michael
+**Question:** Realtime vs poll for RS→RT reference sync?
+**Decision:** Poll every 15 minutes. On-demand lookup at scan time as a secondary refresh path. Realtime not needed for launch.
+**Action for agent:** Implement 15-minute delta poll pattern per the Q-008 discovery best-guess. Realtime deferred to future decision.
+**Status:** active
+
+## A-20260629-005 — answers Q-009-A
+**Answered:** 2026-06-29 by Michael
+**Question:** Migrate historical intake photos to R2 or keep Supabase Storage?
+**Decision:** Standardize on R2 for new photos going forward. Keep old photos where they are (Supabase Storage). Build the `shared.intake_photos` index to bridge the two locations transparently. Migration of historical photos deferred indefinitely; retirement of Supabase Storage buckets happens naturally over time as photos age out.
+
+Rationale: R2 has zero egress fees, essential for client-page photo galleries and future AI training data pipelines. Historical photos are low-view-frequency; migration cost isn't justified.
+**Action for agent:** Formalized as D-021 (photo storage strategy). All new photo capture in the rebuild writes to R2. Index table is authoritative source for photo lookup regardless of physical storage location.
+**Status:** active
+
+## A-20260629-006 — answers Q-009-B
+**Answered:** 2026-06-29 by Michael
+**Question:** Should pickup before/after require paired photo counts (1:1)?
+**Decision:** Human verification, not hard block. The Pickup Station UI must show the intake before photos alongside the release items, and the operator must click a confirmation prompt verifying that the items being returned match the intake photos. Soft workflow with mandatory acknowledgment.
+**Action for agent:** W-38 implementation is a UI verification pattern: display before photos side-by-side with current release items, require operator to check "I verify these items match" before completing pickup. No count-based hard block. Log the operator's acknowledgment to the audit trail per D-020.
+**Status:** active
+
+## A-20260629-007 — answers Q-011-A
+**Answered:** 2026-06-29 by Michael
+**Question:** Should received_components drive job_components row creation at intake?
+**Decision:** Yes, at the Receive Watch stage (not at shipping/dropoff, and not at rollisuite-intake edge function).
+
+The two-stage intake model is more specific than originally captured in D-019:
+- **Stage 1a — Shipping Receive page:** Captures package arrival data (data collection layer)
+- **Stage 1b — Drop-off page:** Captures walk-in intake data (data collection layer)
+- **Stage 2 — Receive Watch page:** The verification + inventory commit + component mapping layer. This is where staff view all upstream data (what was shipped/dropped-off, quantity of items, viewable estimate) and correctly enter/verify the components.
+
+Missing UI feature: **variance notifier**. When received items don't match the estimate (more or fewer items than expected), staff currently have to go back, modify the estimate, and restart the receive process. Should be an inline notifier at the Receive Watch page that flags variance and offers a resolution path.
+
+**Action for agent:** Amend D-019 to reflect the three-page structure (Shipping Receive + Drop-off + Receive Watch) and precise commit-point at Receive Watch. Component row creation happens at Stage 2. Create W-41 for the variance notifier feature.
+**Status:** active
+
+## A-20260629-008 — answers Q-011-B
+**Answered:** 2026-06-29 by Michael
+**Question:** Should RS intake save trigger RW push immediately?
+**Decision:** Yes, but only after labels are printed. When labels are printed, RS pushes to RW with authority to overwrite any previous input for that watch (prevents duplicates from earlier partial pushes).
+**Action for agent:** Preserve label-wizard as the canonical push trigger. Ensure the push is idempotent-with-overwrite semantics: incoming push replaces any prior RW state for that watch record. Log every push to audit trail per D-020.
+**Status:** active
+
+## A-20260629-009 — answers Q-013-A
+**Answered:** 2026-06-29 by Michael
+**Question:** Should safe bins be modeled as station_id values or a separate storage_slot entity?
+**Decision:** Reuse the `station_id` namespace for safe bins (e.g., `safe_bin_A1`, `safe_bin_A2`). Uniformity across all physical locations (workshop stations, safe bins, polish room slots, etc.) simplifies the location model and enables W-37 drag-and-drop across all of them.
+**Action for agent:** Extend the station_id namespace to include safe bins. Department metadata on each station distinguishes types (`safe_storage`, `watchmaker_bench`, `polish_room`, `receiving`, etc.). Bin ordering (Vianna sorts by due date) becomes a UI concern with sort keys on the station record.
+**Status:** active
+
+## A-20260629-010 — answers Q-013-B
+**Answered:** 2026-06-29 by Michael
+**Question:** Is RS `client_property` or RW `job_components` the canonical row for W-33 visual inventory?
+**Decision:** Neither in isolation. A watch has one identity — its serial number. That identity never changes.
+
+When a watch arrives, it's whole: **1 of 1** (one piece, one location).
+
+When service requires disassembly, the count reflects how many pieces currently exist. A watch split into head, bracelet, and case for parallel work becomes **1 of 3, 2 of 3, 3 of 3** — three pieces, each potentially at a different station, all belonging to the same watch identity.
+
+When work completes and everything reassembles, the count returns to **1 of 1**. Reunification.
+
+The canonical spine for W-33 is the **watch record** (one row per unique serial number). Components are not independent things — they're pieces of one watch, temporarily separated during service. The X of Y notation captures the current assembly state at a glance.
+
+Data model implications:
+- Watch table has one row per unique serial number (the identity)
+- Piece table has one row per piece currently in existence
+- Every piece row references its parent watch via FK — no piece can exist without a watch
+- Each piece has: piece_number, piece_total, piece_type (head, bracelet, case, whole watch), station_id, staff_id, moved_at
+- When a watch is whole: one piece row (1 of 1, type "whole watch")
+- When a watch is disassembled: multiple piece rows sharing the same watch_id
+- When pieces reunify: rows collapse back to one (1 of 1)
+
+UI implications for W-33: The dashboard shows watches, grouped by customer. Each watch card displays its current assembly state (1 of 1 · In safe, OR 1 of 3, 2 of 3, 3 of 3 · Distributed across stations). Expandable to see per-piece location and custody.
+
+UI implications for W-37: Staff drag pieces between stations. Every drag is logged as piece X of Y moved from Station A to Station B for a specific watch_id. When all pieces of a watch land at the same station, the UI signals ready for reunification.
+
+Chain-of-custody implications (D-015 / D-019 audit trail): Every piece movement produces an audit log row: watch_id, piece_id, from_station, to_station, staff_id, timestamp. Reunification is when all piece rows for a watch collapse back to one.
+
+**Action for agent:** Formalize as D-022 (watch assembly state model). This is a foundational rebuild decision affecting SPEC-001 (two-stage intake), SPEC-005 (Shop Floor drag-drop), and any UI displaying watch inventory. The client_property vs job_components framing was based on a wrong assumption of competing identities; the correct model is one identity (watch) with N current-state pieces.
+**Status:** active
+
+## A-20260629-011 — noted for next snapshot: Q-005-C misfile
+**Answered:** 2026-06-29 by Cursor Agent (procedural)
+**Question:** Correction — the YOUR ANSWER for Q-005-C in the QUESTIONS-2026-06-29-am.docx doc contained the Lovable investigation content that was actually the answer to Q-005-B (already committed as A-20260628-011). The real answer to Q-005-C came separately via pg_cron query and is captured as A-20260629-001 above.
+**Action for agent:** No action needed. This entry documents the paste error for audit clarity.
+**Status:** noted
+
 ---
 
 _End of human answers file._
