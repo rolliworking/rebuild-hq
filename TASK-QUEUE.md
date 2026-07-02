@@ -2,8 +2,8 @@
 
 > **For Qwen:** Pick the next task with status `pending`. Update status to `in-progress` when you start. To `complete` or `blocked` when you finish. Never skip the workflow.
 
-**Queue status:** 1 pending, 0 in-progress, 15 complete, 0 blocked (Phase 1: Q-001–Q-015 complete; Q-016 is post-phase ad-hoc spike)
-**Last updated:** 2026-07-01
+**Queue status:** 2 pending, 0 in-progress, 15 complete, 0 blocked (Phase 1: Q-001–Q-015 complete; Q-016 and Q-MIG-001 are post-phase ad-hoc spikes)
+**Last updated:** 2026-07-02
 
 ---
 
@@ -37,6 +37,7 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 | Q-014 | complete | P2 | Inventory RolliWorking iPad UI + gestures | Q-002 |
 | Q-015 | complete | P2 | Map intake workflow variants (estimate-first vs none) | Q-001 |
 | Q-016 | pending | P0 | Small jobs current workflow (discovery spike) | Q-001, Q-002, Q-004 |
+| Q-MIG-001 | pending | P0 | Legacy schema comprehensive mapping (migration spike) | Q-001–Q-015, D-029 |
 
 ---
 
@@ -620,14 +621,50 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 
 ---
 
-## Backlog (after Q-016)
+### Q-MIG-001 — Legacy schema comprehensive mapping (migration spike)
+
+**Status:** pending
+**Priority:** P0 (post-Phase-1 migration workstream spike)
+**Estimated time:** 2-3 hours
+**Skill:** `mapping-legacy-workflows`
+**Depends on:** Q-001 through Q-015, D-029
+
+**Goal:** Produce a comprehensive map of all three legacy Supabase projects (RS, RW, RC) as the foundation for migration SPECs per D-029.
+
+**Task packet:** `documentation/discovery-migration/Q-MIG-001-legacy-schema-mapping.md`
+
+**Required output:** Investigation findings written to the same file, following Q-001–Q-016 discovery structure (adapted for migration workstream).
+
+**Acceptance criteria:**
+- Per-project table, column, FK, RLS, extension, storage, and auth inventories complete
+- Dead tables, orphan rows, and duplicate-client clusters identified
+- Cross-project entity references documented
+- Migration risk hotspots ranked
+- Proposed canonical mapping outline included
+- Open questions in plain language per D-018
+
+**Out of scope:**
+- No writes to legacy Supabase (per D-025)
+- No SPEC-MIG-* drafting yet
+- Q-MIG-002 through Q-MIG-008 are separate spikes
+
+---
+
+## Backlog (after Q-016 / Q-MIG-001)
 
 Future tasks that aren't yet queued:
 
+**Main rebuild workstream:**
 - Q-017 — RolliShop greenfield architecture proposal
 - Q-018 — Concierge role workflow design (when role is filled)
 - Q-019 — PartsWiki standalone scope finalization
 - Q-020 — Cross-app testing harness (e2e flows spanning RS + RW + RC)
+
+**Migration workstream (per D-029):**
+- Q-MIG-002 — Duplicate resolution spike (uses Q-MIG-001 findings)
+- Q-MIG-003 — Legacy → canonical mapping spike
+- Q-MIG-004 — Dead table decisions spike
+- Q-MIG-005 through Q-MIG-008 — RLS, auth, photos, QBO migration spikes
 
 ---
 
