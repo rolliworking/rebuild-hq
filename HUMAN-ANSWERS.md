@@ -314,6 +314,158 @@ Additional architectural signal: "Drop off and shipping receive modules are very
 **Action for agent:** Add W-48 for auto-generate-estimate at intake. Amend D-019 to note that outbound (pickup + shipping-outbound) follows a mirror two-stage pattern. Stagnation tracking still applies as a fallback safety net, but the primary fix is the workflow gap. Update SPEC-001 (two-stage intake) planning to include auto-generate estimate as part of Stage 1a and Stage 1b flow.
 **Status:** active
 
+## A-20260630-006 — answers SPEC-PREP-002
+**Answered:** 2026-06-30 by Michael
+**Question:** Migrate all historical data or use a cutoff date?
+**Decision:** Migrate everything. Data older than 18 months = read-only import. Data within the last 18 months = editable import.
+
+The 18-month cutoff applies uniformly to customer records, watch records, jobs, invoices, and any other historical operational data. Older records remain queryable and editable-in-view (for reference, warranty lookup, historical context) but not editable-in-place (no writes against the archived data).
+**Action for agent:** Feeds SPEC-MIG-* planning per D-029. Migration workstream includes a `migration_read_only_flag` on migrated records where `job_completed_at` (or equivalent) is older than 18 months from cutover date. RS UI enforces the read-only flag for editing but shows the data. Full-text search and lookups work identically on read-only and editable data.
+**Status:** active
+
+## A-20260630-007 — answers SPEC-PREP-003
+**Answered:** 2026-06-30 by Michael
+**Question:** How firm is the February 2027 facility opening date?
+**Decision:** Facility opening timeline is real, but a hidden critical path has emerged: **Lovable is breaking.** Some rebuild capabilities need to be operational sooner than the Labor Day 2026 cutover, not waiting for facility opening.
+
+Michael explicitly stated: "We need some type of operational rs rc and rw soon. We will be simultaneously building a prototype of RolliTime as well for learning."
+
+Sequencing implication:
+- Rebuild slices ship AS SOON AS they can replace failing Lovable functionality, not on a preset schedule
+- Cutover schedule remains a planning tool but individual cutovers may accelerate based on Lovable degradation
+- RolliTime prototype ships 9/1/26 as a learning vehicle in parallel per SPEC-PREP-012
+**Action for agent:** Update RISK-REGISTER-1-31-2027.md with "Lovable stability risk driving earlier partial cutovers" as a HIGH-severity risk. Update the cutover milestone schedule to note that dates are targets, not commitments — earlier cutover is acceptable when a rebuild slice can safely replace a degrading Lovable capability. PROD-FIX-001, PROD-FIX-002, PROD-FIX-003 remain in-scope as emergency stability patches per D-025. Consider adding an ongoing Lovable stability monitoring practice (weekly health check of the three Lovable apps) as an operational discipline.
+**Status:** active
+
+## A-20260630-008 — answers SPEC-PREP-004
+**Answered:** 2026-06-30 by Michael
+**Question:** When Michael shifts to home-based work mid-July, who covers day-to-day decisions and escalations?
+**Decision:** Michael is not shifting to fully home-based. He works home-based on **Fridays only**. Combined with Saturday and Sunday, this creates 3-day work spans dedicated to rebuild/software work. Monday through Thursday, he remains on-site for shop operations, decisions, escalations, and staff support.
+
+This significantly reduces the Transferability Test urgency around role-based approvals for the July timeframe. However, the underlying Transferability Test requirement remains valid architecturally: approvals in the software should route to a role (owner, manager, front_desk), not to a specific person (Michael, Vianna). Mike Michaels arriving end of July with expanded management role continues to reinforce role-based design.
+**Action for agent:** No immediate coverage matrix required — Michael is on-site 4 days/week. Continue designing all approval workflows as role-based per Transferability Test (D-023). Update SCOPE-HOLD-1-31-2027.md working pattern note: 3-day rebuild work spans (Fri-Sat-Sun) at home, 4 days on-site. No coverage matrix artifact required for July. Q-010 (cross-app auth) planning continues to prioritize role-based permissions over name-based routing.
+**Status:** active
+
+## A-20260630-009 — answers SPEC-PREP-005
+**Answered:** 2026-06-30 by Michael
+**Question:** What must be live at facility opening 1/31/2027?
+**Decision:** The 1/31/2027 IN scope is:
+
+1. **Feature parity with current RS + RW + RC** — everything the Lovable apps do today, the rebuild does. Working better, more functional, no data silos.
+2. **Canonical data model** — one client, one watch, one job, one custody chain across the ecosystem. No fragmented duplicates per D-028.
+3. **Multi-entity operational model** — the software supports Rolliworks + RolliShop operating as two distinct entities within one facility. See D-030 for full scope. **NOT physical multi-location** — that's post-1/31 scope.
+4. Plus all previously committed 1/31 items: two-stage intake (D-019), Shop Floor unified view with fast lane (W-44 + W-47), photo storage index (D-021), two-Supabase-project architecture (D-029), RGTime as staff master (D-026), chain-of-custody log (D-015), fresh Supabase for rebuild.
+5. Plus new items from this cycle: client-facing self-service kiosk (W-49), voice memo to-do list (W-52), thin experimental Authenticator on inspection photos (W-53), Frigate NVR integration (W-51).
+
+Michael's exact framing: "same functionality of current rs rw and rc but working better, more functional and no data silos. By 1/31 we need multi store ready."
+**Action for agent:** Update SCOPE-HOLD-1-31-2027.md IN list with feature parity as baseline requirement + multi-entity operational model + all specific items listed. Every SPEC written between now and 1/31 must pass the Transferability Test AND the multi-entity test (can Rolliworks + RolliShop both use this feature under the same roof?).
+**Status:** active
+
+## A-20260630-010 — answers SPEC-PREP-006
+**Answered:** 2026-06-30 by Michael
+**Question:** What is explicitly OUT of scope for 1/31/2027?
+**Decision:** OUT of scope for 1/31/2027:
+
+- Physical multi-location expansion (second building)
+- Customer-facing Authenticator V1 (deferred to Q2-Q4 2027 per POST-FACILITY-ROADMAP)
+- RolliCurator wizard (deferred)
+- PartsWiki (deferred)
+- M3KE chatbot embedded in RolliSuite (deferred)
+- Full historical photo migration (deferred per D-021)
+- Paper carbon work order digitization (out of scope per Q-013)
+- Full Jarvis AI capabilities (agentic, LLM-based, cross-app queries) — post-facility Q2-Q4 2027
+
+IN scope for 1/31/2027 (from SPEC-PREP-005 + this answer):
+- Multi-entity operational model per D-030 (Rolliworks + RolliShop, same facility)
+- Basic Jarvis: room-to-room paging, whole-store paging, voice memo to-do list capture per D-023 amendment
+- Thin experimental Authenticator: % authenticity score on inspection photos, internal-only, staff-feedback-captured per W-53
+**Action for agent:** Update SCOPE-HOLD-1-31-2027.md OUT list with explicit items. Update POST-FACILITY-ROADMAP-Q2-Q4-2027.md to note thin Authenticator (W-53) precedes full Authenticator V1 — thin version collects training data during 2027 which then informs full V1. Update D-023 to reflect the voice memo addition to Jarvis MVP scope.
+**Status:** active
+
+## A-20260630-011 — answers SPEC-PREP-007
+**Answered:** 2026-06-30 by Michael
+**Question:** Should software station names mirror physical floor plan?
+**Decision:** Yes — mirror physical floor plan. Software station IDs match the labels printed at physical stations in the new facility. Safe bin numbering matches physical safe slots (per A-20260629-009 already committed).
+**Action for agent:** SPEC-002 canonical data model uses `station_id` values that match printed physical labels in the Feb 2027 facility. Floor plan naming convention must be finalized during facility buildout planning (Aug-Oct 2026) so software station IDs can be locked before SPEC-005 (Shop Floor) finalizes. Add facility buildout note to FACILITY-INTEGRATION-CHECKLIST.md.
+**Status:** active
+
+## A-20260630-012 — answers SPEC-PREP-008
+**Answered:** 2026-06-30 by Michael
+**Question:** Kiosk and iPad placement in the new facility?
+**Decision:** Four distinct device categories with specified mounts:
+
+1. **Front kiosk** — wall-mounted, client-facing. Client enters their info + job request (like filling out a website service request but via kiosk). See W-49.
+2. **Watchmaker iPad** — mobile. Carried around by watchmakers as they move between bench and stations.
+3. **Band room iPad** — mobile. Used for parts requests and band-department workflows.
+4. **RGTime iPad** — wall-mounted. Dedicated kiosk for clock in/out per RGTime concept.
+
+Additional inferred devices (from operational context, confirm during facility planning):
+- Receiving desktop + label printer (still applies from prior discovery)
+- Pickup station kiosk (client-facing at exit, TBD if mounted or shared with front kiosk)
+- Concierge iPad (per D-024 fast lane, mobile or station-mounted TBD)
+**Action for agent:** Update FACILITY-INTEGRATION-CHECKLIST.md with the four confirmed device categories + mount types. SPEC-001 (two-stage intake) design accommodates client-facing kiosk as intake entry point (Stage 0 pre-Stage 1). SPEC-005 (Shop Floor) design supports mobile watchmaker iPad. RGTime SPEC (when drafted) accommodates wall-mount UI. Network cabling plan per SPEC-PREP-011 accounts for these four device locations plus PoE for cameras.
+**Status:** active
+
+## A-20260630-013 — answers SPEC-PREP-009
+**Answered:** 2026-06-30 by Michael
+**Question:** How should the physical safe integrate with software?
+**Decision:** Bulk-assign pattern:
+
+- Optional: barcode on safe door for zone entry event
+- Primary workflow: a folder containing all job QR code labels stays near the safe
+- To bulk-assign jobs to safe: click "safe" button in Shop Floor (assign mode per W-47) → scan job labels one after another → all scanned jobs are assigned to safe in one bulk operation
+- No per-slot scanning inside the safe. Physical safe bin location assumed (staff knows where they put it).
+
+This aligns with W-37 bulk assignment pattern (click position on map = bulk assign) and W-47 (Shop Floor unified view with search + assign modes). Safe is one of the clickable positions on the Shop Floor map.
+**Action for agent:** SPEC-005 Shop Floor implements "safe" as a clickable position on the map. Clicking "safe" enters bulk-scan mode. Each scanned job QR moves that job's custody to `in_safe_for_pickup` or equivalent state per D-024 state machine. Per-slot scanning inside safe deferred as a possible future enhancement (post-1/31). No custom hardware required — uses same iPad + job QR labels already in use.
+**Status:** active
+
+## A-20260630-014 — answers SPEC-PREP-010
+**Answered:** 2026-06-30 by Michael
+**Question:** IP camera positions and retention requirements?
+**Decision:** Split-tier system with Frigate as unified NVR. Non-custody zones use RTSP-compatible Wi-Fi cameras (Reolink or Amcrest) for Nest-like install simplicity without cloud/subscription lock-in. Critical zones (safe, receiving, front desk, active benches) use PoE cameras for reliability. Both tiers feed the same Frigate system, which integrates with the rebuild's chain-of-custody log via MQTT/webhook. Cabling plan for Feb 2027 buildout only needs Cat6 runs to Tier 1 zones.
+
+Full architecture spec captured in W-51.
+**Action for agent:** Add W-51 (Frigate NVR + split-tier camera architecture) to WISHLIST.md. Update FACILITY-INTEGRATION-CHECKLIST.md with camera placement plan for Tier 1 (safe interior + exterior, receiving station, front desk, main entrance, rear exit, active work benches) and Tier 2 (general workshop, break room, hallways). Update SPEC-PREP-011 network plan with PoE runs for Tier 1 cameras. Retention policy: 30-90 days minimum per insurance requirements (confirm with insurer before final camera specification).
+**Status:** active
+
+## A-20260630-015 — answers SPEC-PREP-011
+**Answered:** 2026-06-30 by Michael
+**Question:** Network and power requirements at each station?
+**Decision:** Hardwired Ethernet to benches and safe. PoE switch for cameras. Separate IoT VLAN for cameras and IoT devices.
+
+Confirmed infrastructure baseline for Feb 2027 facility:
+- Cat6 runs to every fixed station (benches, safe, RGTime kiosk, front kiosk, receiving desk, pickup)
+- PoE switch (managed) for Tier 1 cameras and any PoE peripherals
+- Business-class Wi-Fi (Ubiquiti UniFi or equivalent) for mobile iPads and Tier 2 Wi-Fi cameras
+- Separate IoT VLAN for cameras isolated from staff/customer traffic
+- UPS at safe area and network closet
+- Guest Wi-Fi network isolated from operational network
+**Action for agent:** Update FACILITY-INTEGRATION-CHECKLIST.md with confirmed network topology. IT install ownership: Michael + external IT contractor for cabling/switch install; Michael + Cursor for software configuration. Add to facility buildout schedule: network cabling must precede drywall.
+**Status:** active
+
+## A-20260630-016 — answers SPEC-PREP-012
+**Answered:** 2026-06-30 by Michael
+**Question:** Does the testing station move to the new facility day one, and must RolliTime integration be live for opening?
+**Decision:** RolliTime prototype starts being used **9/1/2026** (Labor Day 2026 — cutover 1 milestone). Uses the same rebuild methodology: discovery → questions → SPEC → BUILD after some learning done in production use.
+
+This means RolliTime enters "learning mode" 9/1/26 with the existing prototype. Real usage generates data + surfaces issues. Discovery task packet drafted for whichever session Michael queues it. Formal RolliTime rebuild SPEC follows after ~1-2 months of learning-mode usage.
+
+RolliTime is confirmed IN scope for 1/31/2027 facility opening.
+**Action for agent:** Update cutover milestone schedule: 9/1/2026 includes RolliTime prototype live in learning mode. Draft Q-RT-001 discovery task packet for later Cursor autonomous execution — investigates current RolliTime prototype code, actual usage patterns, and surfaces architectural questions. Add "RolliTime SPEC drafting" to the SPEC weekend rotation for late 2026 (specific weekend TBD based on learning-mode timing).
+**Status:** active
+
+## A-20260630-017 — answers SPEC-PREP-013
+**Answered:** 2026-06-30 by Michael
+**Question:** How much lead time do staff need to train on rebuilt flows? Should we run parallel old/new systems?
+**Decision:** Training approach: **operating instructions drafted as a training manual**. No parallel run. Big-bang cutover per app slice. Michael is available on-site as a live resource for questions during rollout.
+
+Michael's team learns as they go. Michael's management philosophy per prior sessions: team learns from pain and Michael is present to answer questions.
+
+This aligns with cutover milestone schedule — each cutover ships as one event, no rehearsal period. Michael's 4-day on-site presence supports live Q&A during rollouts.
+**Action for agent:** For each app slice cutover (Labor Day 2026, Oct, Nov, Dec, Jan), Cursor drafts a plain-language operating instructions manual as part of the cutover package. Manual covers: what the app does, how to do the common workflows (intake, pickup, assign, etc.), what to do if X happens, who to ask. No formal training curriculum. No parallel-run infrastructure required. Add "training manual" as a required deliverable in every cutover milestone package.
+**Status:** active
+
 ---
 
 _End of human answers file._
