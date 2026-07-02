@@ -2,7 +2,7 @@
 
 > **For Qwen:** Pick the next task with status `pending`. Update status to `in-progress` when you start. To `complete` or `blocked` when you finish. Never skip the workflow.
 
-**Queue status:** 2 pending, 0 in-progress, 15 complete, 0 blocked (Phase 1: Q-001–Q-015 complete; Q-016 and Q-MIG-001 are post-phase ad-hoc spikes)
+**Queue status:** 0 pending, 0 in-progress, 19 complete, 0 blocked (Phase 1: Q-001–Q-015 complete; Q-016, Q-MIG-001, Q-D030-001, Q-CAM-001 complete)
 **Last updated:** 2026-07-02
 
 ---
@@ -36,8 +36,10 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 | Q-013 | complete | P1 | Map watch storage / safe workflow digital state | Q-001, Q-011 |
 | Q-014 | complete | P2 | Inventory RolliWorking iPad UI + gestures | Q-002 |
 | Q-015 | complete | P2 | Map intake workflow variants (estimate-first vs none) | Q-001 |
-| Q-016 | pending | P0 | Small jobs current workflow (discovery spike) | Q-001, Q-002, Q-004 |
-| Q-MIG-001 | pending | P0 | Legacy schema comprehensive mapping (migration spike) | Q-001–Q-015, D-029 |
+| Q-016 | complete | P0 | Small jobs current workflow (discovery spike) | Q-001, Q-002, Q-004 |
+| Q-MIG-001 | complete | P0 | Legacy schema comprehensive mapping (migration spike) | Q-001–Q-015, D-029 |
+| Q-D030-001 | complete | P1 | Two-entity data model deep dive | D-030, DRAFT-CANONICAL-DATA-MODEL |
+| Q-CAM-001 | complete | P1 | Frigate integration architecture | W-51, D-015 |
 
 ---
 
@@ -596,7 +598,7 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 
 ### Q-016 — Small jobs current workflow (discovery spike)
 
-**Status:** pending
+**Status:** complete
 **Priority:** P0 (post-Phase-1 ad-hoc spike)
 **Estimated time:** 1-2 hours
 **Skill:** `mapping-legacy-workflows`
@@ -623,7 +625,7 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 
 ### Q-MIG-001 — Legacy schema comprehensive mapping (migration spike)
 
-**Status:** pending
+**Status:** complete
 **Priority:** P0 (post-Phase-1 migration workstream spike)
 **Estimated time:** 2-3 hours
 **Skill:** `mapping-legacy-workflows`
@@ -647,6 +649,22 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 - No writes to legacy Supabase (per D-025)
 - No SPEC-MIG-* drafting yet
 - Q-MIG-002 through Q-MIG-008 are separate spikes
+
+---
+
+### Q-D030-001 — Two-entity data model deep dive
+
+**Status:** complete  
+**Priority:** P1 (post-Phase-1)  
+**Output:** `documentation/discovery/Q-D030-001-two-entity-data-model.md`
+
+---
+
+### Q-CAM-001 — Frigate integration architecture
+
+**Status:** complete  
+**Priority:** P1 (facility buildout)  
+**Output:** `documentation/discovery/Q-CAM-001-frigate-integration.md`
 
 ---
 
