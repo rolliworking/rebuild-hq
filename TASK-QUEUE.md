@@ -2,7 +2,7 @@
 
 > **For Qwen:** Pick the next task with status `pending`. Update status to `in-progress` when you start. To `complete` or `blocked` when you finish. Never skip the workflow.
 
-**Queue status:** 1 pending, 0 in-progress, 15 complete, 0 blocked
+**Queue status:** 1 pending, 0 in-progress, 15 complete, 0 blocked (Phase 1: Q-001–Q-015 complete; Q-016 is post-phase ad-hoc spike)
 **Last updated:** 2026-07-01
 
 ---
@@ -593,11 +593,37 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 
 ---
 
-## Backlog (after Q-015)
+### Q-016 — Small jobs current workflow (discovery spike)
+
+**Status:** pending
+**Priority:** P0 (post-Phase-1 ad-hoc spike)
+**Estimated time:** 1-2 hours
+**Skill:** `mapping-legacy-workflows`
+**Depends on:** Q-001, Q-002, Q-004
+
+**Goal:** Map how small jobs (single-operation service work) are handled in current Lovable RolliSuite — informs D-024 workflow-type routing before SPEC weekend.
+
+**Task packet:** `documentation/discovery/Q-016-small-jobs-current-workflow.md`
+
+**Required output:** Investigation findings written to the same file, following Q-001–Q-015 discovery structure.
+
+**Acceptance criteria:**
+- Categorization (structured vs ad-hoc) documented
+- 3-5 example small-job code paths traced
+- Custody model gaps and skipped steps identified
+- Findings mapped to D-024, W-44, SPEC-001
+- Open questions in plain language per D-018
+
+**Out of scope:**
+- No code changes to current Lovable (per D-025 if applicable)
+- Don't propose full rebuild design — inform SPEC-001 only
+
+---
+
+## Backlog (after Q-016)
 
 Future tasks that aren't yet queued:
 
-- Q-016 — RolliCurator scaffolding spec (when ready to build)
 - Q-017 — RolliShop greenfield architecture proposal
 - Q-018 — Concierge role workflow design (when role is filled)
 - Q-019 — PartsWiki standalone scope finalization
