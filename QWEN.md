@@ -63,6 +63,10 @@ When you finish a task or hit a stopping point:
 3. If blocked, log the specific question to `HUMAN-QUEUE.md` (see format below)
 4. Commit your changes with a descriptive message (e.g. "Discovery: completed Q-001 Receive Watch map")
 5. Push to `main`
+6. Regenerate the plain-language **What's Next** Word snapshot per **D-027** to Dropbox:
+   - Folder: `G:\Dropbox\__AI\emergent-hq-whats-next\`
+   - Filename: `WHATS-NEXT-YYYY-MM-DD.docx` (append `-am` / `-pm` if multiple per day)
+   - Preserve history (never overwrite or delete old snapshots)
 
 ---
 

@@ -94,6 +94,17 @@ Discovery output files (`documentation/discovery/Q-###-*.md`) must also use plai
 
 ---
 
+## Session end discipline (D-027)
+
+At the end of every meaningful work session, regenerate a plain-language **What's Next** Word document to Dropbox per **D-027**.
+
+- **Dropbox folder:** `G:\Dropbox\__AI\emergent-hq-whats-next\`
+- **Filename:** `WHATS-NEXT-YYYY-MM-DD.docx` (append `-am` / `-pm` if multiple per day)
+
+This is the mobile-friendly queue surface Michael can read anywhere. Historical snapshots are preserved (never delete or overwrite).
+
+---
+
 ## Where to look first
 
 1. This file (`CLAUDE.md`)
