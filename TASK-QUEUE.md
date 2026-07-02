@@ -2,8 +2,8 @@
 
 > **For Qwen:** Pick the next task with status `pending`. Update status to `in-progress` when you start. To `complete` or `blocked` when you finish. Never skip the workflow.
 
-**Queue status:** 0 pending, 0 in-progress, 15 complete, 0 blocked
-**Last updated:** 2026-06-29
+**Queue status:** 1 pending, 0 in-progress, 15 complete, 0 blocked
+**Last updated:** 2026-07-01
 
 ---
 
@@ -36,6 +36,7 @@ Each task is a bounded unit of discovery work, scoped to fit in 2-4 hours of Qwe
 | Q-013 | complete | P1 | Map watch storage / safe workflow digital state | Q-001, Q-011 |
 | Q-014 | complete | P2 | Inventory RolliWorking iPad UI + gestures | Q-002 |
 | Q-015 | complete | P2 | Map intake workflow variants (estimate-first vs none) | Q-001 |
+| Q-016 | pending | P0 | Small jobs current workflow (discovery spike) | Q-001, Q-002, Q-004 |
 
 ---
 
