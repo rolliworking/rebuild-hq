@@ -257,6 +257,63 @@ Chain-of-custody implications (D-015 / D-019 audit trail): Every piece movement 
 **Action for agent:** No action needed. This entry documents the paste error for audit clarity.
 **Status:** noted
 
+## A-20260630-001 — answers Q-007-A
+**Answered:** 2026-06-30 by Michael
+**Question:** Should customer email replies (currently sent to noreply@) automatically route into the customer's RolliConnect conversation thread?
+**Decision:** Yes. Reply-token routing applies to ALL customer-facing emails from RolliSuite: shipping notifications, estimates, inspection notes, parts approvals. Every outgoing email carries a unique reply token in the Reply-To header. Replies land in the correct RC conversation for the correct client, automatically.
+
+Additional scope surfaced by this answer: today Rolliworks has some clients who exist as email-only contacts (no RC client record). The rebuild needs a way to convert email-only clients into structured RC clients so the conversation history has a real client to attach to.
+**Action for agent:** Wire every outbound email path (shipping, estimate, inspection, parts approval) with a per-send RC conversation token in Reply-To. Add W-46 for email-only-client-to-RC migration. RolliConnect becomes the destination for all customer email traffic in the rebuild.
+**Status:** active
+
+## A-20260630-002 — answers Q-007-B
+**Answered:** 2026-06-30 by Michael
+**Question:** Where should the one-button bulk "testing complete" email live — in RolliWorking (watchmaker workspace) or RolliSuite (template owner)?
+**Decision:** Neither. Live on RolliConnect. Mike Michaels will own testing-complete marking going forward as part of his management role starting mid-July.
+
+This is an ownership shift: testing-complete moves from watchmaker-action (RW) to management-action (RC-hosted UI). Aligns with the emerging pattern of RC as central client communication hub.
+**Action for agent:** Bulk testing-complete email trigger lives on RC. RW notifies RC when testing status changes for a batch of jobs. Mike Michaels (or manager role per Q-010) reviews the batch and triggers send. RC handles template rendering, delivery, audit log, reply-token routing per A-20260630-001. Update Q-010 (cross-app auth) planning to reflect manager role reviewing testing-complete queue.
+**Status:** active
+
+## A-20260630-003 — answers Q-012-A
+**Answered:** 2026-06-30 by Michael
+**Question:** When an existing RC customer submits a new web form / portal request, should it join their existing thread or start a new one?
+**Decision:** One client = one client (no duplicate client records). Within that single client's record, requests are organized in dated folders. Folder structure: conversations, requests, archive, answered.
+
+Each new request creates a new folder named by request date. Reply-to-message buttons in the conversation UI route replies to the correct folder. Staff can move messages between folders manually when needed. This gives the operational separation of "one request, one folder" while preserving the single-client entity.
+
+Pattern in plain terms:
+- Client: John Smith (one record)
+- Folder: "2026-05-14 request" (contains all messages for that specific service request)
+- Folder: "2026-06-22 request" (separate service request, separate folder)
+- Folder: "archive" (old resolved requests)
+- Folder: "answered" (recently resolved)
+- Reply button on a message routes reply into the same folder as the original message
+**Action for agent:** RC data model supports one-client-many-conversations with folder-based organization. Folder is a first-class field on the conversation. Reply-token routing (A-20260630-001) resolves to the folder the original message lived in. Merge/split UI (per Q-012 findings) lets staff move messages between folders. Add to SPEC planning for RolliConnect rebuild.
+**Status:** active
+
+## A-20260630-004 — answers Q-014-A
+**Answered:** 2026-06-30 by Michael
+**Question:** Should Component Status page (older, mouse-only) merge into Shop Floor page (station map) with drag-drop per W-37?
+**Decision:** Yes. Unify into a single map view with a search field. The map has two modes based on interaction:
+- **Search mode (lookup):** operator types in the search field, map highlights component locations for matches. Component Status functionality preserved.
+- **Assign mode:** operator clicks a clickable position on the map to bulk-assign components to that station. Shop Floor bulk-assignment functionality preserved.
+
+Additional need surfaced: a separate tab that shows which jobs a specific tech has, with a way to generate a report. This is production reporting per tech — directly connects to the tech breadcrumb pattern (W-45) and closes the loop with the QBO product-code workaround being retired.
+**Action for agent:** SPEC-005 (Shop Floor / iPad UI) unifies Component Status and Shop Floor into single map view with dual modes. Add search field as first-class UI control. Add "Jobs per Tech" tab with report generation. Production report queries the same `job_tech_involvements` join table that powers W-45. Both W-47 and W-45 share the same data plumbing.
+**Status:** active
+
+## A-20260630-005 — answers Q-015-A
+**Answered:** 2026-06-30 by Michael
+**Question:** When a package arrives with no estimate, should the system flag/escalate after N days?
+**Decision:** Not primarily a stagnation problem — primarily a workflow gap. When a package arrives (or a client walks in) without a prior estimate, staff need a one-step way to: generate the next estimate number, look up or add the client, auto-create a memo line describing what was received, save the estimate, then proceed with the drop-off or shipping-receive flow.
+
+Michael's current workaround: stop the intake flow, create the estimate with a memo line, save it, then re-enter the drop-off flow. The rebuild should collapse this into a single continuous flow.
+
+Additional architectural signal: "Drop off and shipping receive modules are very similar and share a lot of features. Same goes for pickup and shipping modules." This validates D-019 two-stage intake pattern (drop-off + shipping-receive both = Stage 1 possession) AND extends it to the outbound side (pickup + shipping-outbound share similar structure).
+**Action for agent:** Add W-48 for auto-generate-estimate at intake. Amend D-019 to note that outbound (pickup + shipping-outbound) follows a mirror two-stage pattern. Stagnation tracking still applies as a fallback safety net, but the primary fix is the workflow gap. Update SPEC-001 (two-stage intake) planning to include auto-generate estimate as part of Stage 1a and Stage 1b flow.
+**Status:** active
+
 ---
 
 _End of human answers file._
